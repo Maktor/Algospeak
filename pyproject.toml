@@ -1,0 +1,15 @@
+[project]
+name = "algospeak-data"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "langdetect>=1.0.9",
+    "openai>=2.16.0",
+    "pydantic>=2.12.5",
+    "python-dotenv>=1.2.1",
+    "scikit-learn>=1.8.0",
+    "sentence-transformers>=5.2.0",
+    "websocket-client>=1.9.0",
+]
