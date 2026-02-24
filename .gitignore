@@ -1,15 +1,25 @@
-# Python-generated files
+# -------------------------
+# OS / Editor
+# -------------------------
+.DS_Store
+.vscode/
+
+# -------------------------
+# Python
+# -------------------------
 __pycache__/
-*.py[oc]
-build/
-dist/
-wheels/
-*.egg-info
+*.pyc
+.ipynb_checkpoints/
 
-# Virtual environments
-.venv
+# -------------------------
+# Data (do not commit)
+# -------------------------
+dataset_cleaning/original_datasets/
+dataset_cleaning/outputs/
+*.parquet
+*.csv
 
+# Optional: environments
+.conda/
 .env
-
-# Generated data files
-generated_data/
+.venv/
