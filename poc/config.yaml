@@ -1,0 +1,31 @@
+# Dual-Encoder RBE PoC Configuration
+
+# Data settings
+data_size: 50000  # Downsampled from 200K for faster iteration
+train_split: 0.7
+val_split: 0.15
+test_split: 0.15
+
+# Model settings
+model_name: "sentence-transformers/all-miniLM-L6-v2"  # STS-trained, 384-dim
+frozen: false  # Unfrozen: fine-tune both encoders
+embedding_dim: 384
+
+# Training settings
+batch_size: 16
+learning_rate: 0.0003
+num_epochs: 5
+warmup_steps: 100
+
+# Loss settings
+loss_type: "contrastive"  # Contrastive loss for similarity learning
+margin: 0.5  # Margin for contrastive loss
+
+# Inference settings
+thresholds: [0.6, 0.7, 0.75, 0.8, 0.85, 0.9]  # Test multiple k values
+similarity_metric: "cosine"
+
+# Paths (relative to poc/)
+data_dir: "data"
+models_dir: "models"
+results_dir: "results"
