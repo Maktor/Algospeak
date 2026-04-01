@@ -1,292 +1,194 @@
-#!/usr/bin/env python3
 """
-Training Loop for Dual-Encoder RBE PoC
+train.py
 
-Train unfrozen encoders with contrastive loss.
+Training loop for the dual BERTweet model.
+
+Both encoders are trained jointly using supervised InfoNCE loss.
+The best checkpoint (lowest validation loss) is saved to poc/checkpoints/best_model.pt.
+
+Usage:
+    uv run python poc/src/train.py
 """
 
-import torch
-import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
-import yaml
-from pathlib import Path
-import logging
-import json
-from tqdm import tqdm
 import sys
+import json
+import time
+import yaml
+import torch
+import torch.nn as nn
+from torch.utils.data import TensorDataset, DataLoader
+from torch.cuda.amp import GradScaler, autocast
+from transformers import get_linear_schedule_with_warmup
+from pathlib import Path
 
-from dual_encoder import create_model
+sys.path.insert(0, str(Path(__file__).parent))
+from model import DualEncoderModel
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-#this method is used to create the dataset class for the training loop. It takes in the texts, exemplars, and labels and creates a PyTorch dataset that can be used with a DataLoader for batching during training.
-class TextRuleDataset(Dataset):
-    """Dataset for text-rule exemplar pairs"""
-    
-    def __init__(self, texts_list, exemplars_list, labels_list):
-        self.texts = texts_list
-        self.exemplars = exemplars_list
-        self.labels = torch.tensor(labels_list, dtype=torch.long)
-    
-    def __len__(self):
-        return len(self.texts)
-    
-    def __getitem__(self, idx):
-        return {
-            'text': self.texts[idx],
-            'exemplars': self.exemplars[idx],
-            'label': self.labels[idx]
-        }
 
-def load_config():
-    """Load configuration from config.yaml"""
-    config_path = Path(__file__).parent.parent / "config.yaml"
-    with open(config_path, 'r') as f:
+def load_config() -> dict:
+    with open(BASE_DIR / "poc" / "config.yaml") as f:
         return yaml.safe_load(f)
 
-#this method is used to load the dataset for the training loop. It takes in the split name and the prepared directory, and returns a PyTorch dataset that can be used with a DataLoader for batching during training.
-def load_dataset(split_name, prepared_dir):
-    """Load dataset split from saved pairs"""
-    split_path = prepared_dir / f"{split_name}_pairs" / "pairs.pt"
-    
-    if not split_path.exists():
-        logger.error(f"Dataset not found: {split_path}")
-        logger.info("Please run ruleset_matcher.py first")
-        sys.exit(1)
-    
-    data = torch.load(split_path)
-    return TextRuleDataset(data['texts'], data['exemplars'], data['labels'])
+
+def load_dataset(path: Path) -> TensorDataset:
+    data = torch.load(path, map_location="cpu", weights_only=True)
+    return TensorDataset(
+        data["sup_ids"],
+        data["sup_mask"],
+        data["unsup_ids"],
+        data["unsup_mask"],
+        data["labels"],
+    )
 
 
-def load_feedback(feedback_dir):
-    """
-    Load human feedback corrections from feedback.jsonl
-
-    This method loads the human feedback corrections from a JSONL file.
-    The file is expected to be located in the feedback directory.
-
-    Parameters
-    ----------
-    feedback_dir : str
-        The directory containing the feedback JSONL file.
-
-    Returns
-    -------
-    A TextRuleDataset object containing the human feedback corrections.
-    If the file is not found, None is returned.
-    """
-    feedback_path = Path(feedback_dir) / "feedback.jsonl"
-    
-    if not feedback_path.exists():
-        logger.warning(f"Feedback file not found: {feedback_path}")
-        return None
-    
-    feedback_list = []
-    with open(feedback_path, 'r') as f:
-        for line in f:
-            feedback_list.append(json.loads(line))
-    
-    logger.info(f"Loaded {len(feedback_list)} feedback items")
-    
-    # Convert to dataset format
-    texts = [f['text'] for f in feedback_list]
-    exemplars = [""] * len(texts)  # Placeholder; will be filled by ruleset_matcher if needed
-    labels = [f['corrected_label'] for f in feedback_list]  # Use corrected labels!
-    
-    return TextRuleDataset(texts, exemplars, labels)
-
-def merge_datasets(*datasets):
-    """Merge multiple datasets"""
-    all_texts = []
-    all_exemplars = []
-    all_labels = []
-    
-    for ds in datasets:
-        if ds is not None:
-            all_texts.extend(ds.texts)
-            all_exemplars.extend(ds.exemplars)
-            all_labels.extend(ds.labels.tolist())
-    
-    return TextRuleDataset(all_texts, all_exemplars, all_labels)
-
-def train_epoch(model, train_loader, optimizer, device):
-    """Train for one epoch"""
-    model.train()
+def run_epoch(model, loader, optimizer, scaler, scheduler, device, cfg, train=True):
+    model.train() if train else model.eval()
     total_loss = 0.0
-    
-    pbar = tqdm(train_loader, desc="Training")
-    for batch in pbar:
-        texts = batch['text']
-        exemplars = batch['exemplars']
-        labels = batch['label'].to(device)
-        
-        # Encode
-        text_embeddings = model.encode_text(texts)
-        rule_embeddings = model.encode_rules(exemplars)
-        
-        # Forward pass
-        _, loss = model(text_embeddings, rule_embeddings, labels)
-        
-        # Backward pass
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-        
-        total_loss += loss.item()
-        pbar.set_postfix({'loss': f'{loss.item():.4f}'})
-    
-    return total_loss / len(train_loader)
+    use_fp16   = cfg.get("fp16", True) and device.type == "cuda"
 
-def validate(model, val_loader, device):
-    """Validate model"""
-    model.eval()
-    total_loss = 0.0
-    
-    with torch.no_grad():
-        pbar = tqdm(val_loader, desc="Validating")
-        for batch in pbar:
-            texts = batch['text']
-            exemplars = batch['exemplars']
-            labels = batch['label'].to(device)
-            
-            # Encode
-            text_embeddings = model.encode_text(texts)
-            rule_embeddings = model.encode_rules(exemplars)
-            
-            # Forward pass
-            _, loss = model(text_embeddings, rule_embeddings, labels)
-            
+    ctx = torch.no_grad if not train else torch.enable_grad
+
+    with ctx():
+        for step, batch in enumerate(loader, 1):
+            sup_ids, sup_mask, unsup_ids, unsup_mask, labels = [
+                b.to(device) for b in batch
+            ]
+
+            if train:
+                optimizer.zero_grad()
+
+            with autocast(enabled=use_fp16):
+                loss, _, _ = model(sup_ids, sup_mask, unsup_ids, unsup_mask, labels)
+
+            if train:
+                scaler.scale(loss).backward()
+                scaler.unscale_(optimizer)
+                torch.nn.utils.clip_grad_norm_(
+                    model.parameters(), cfg["gradient_clip"]
+                )
+                scaler.step(optimizer)
+                scaler.update()
+                scheduler.step()
+
             total_loss += loss.item()
-            pbar.set_postfix({'loss': f'{loss.item():.4f}'})
-    
-    return total_loss / len(val_loader)
+
+            if train and step % 100 == 0:
+                print(
+                    f"    Step {step}/{len(loader)} | loss: {loss.item():.4f}"
+                )
+
+    return total_loss / max(len(loader), 1)
+
 
 def main():
-    import argparse
-    
-    parser = argparse.ArgumentParser(description="Train Dual-Encoder RBE PoC")
-    parser.add_argument('--phase', type=int, default=1, choices=[1, 2], help='Training phase')
-    args = parser.parse_args()
-    
-    config = load_config()
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    logger.info(f"Using device: {device}")
-    
-    # Paths
-    prepared_dir = Path(__file__).parent.parent / "data" / "prepared"
-    feedback_dir = Path(__file__).parent.parent / "data" / "feedback"
-    checkpoint_dir = Path(__file__).parent.parent / "models" / "checkpoints"
-    checkpoint_dir.mkdir(exist_ok=True, parents=True)
-    
-    if args.phase == 1:
-        logger.info("="*60)
-        logger.info("PHASE 1: Training on original data (unfrozen encoders)")
-        logger.info("="*60)
-        
-        # Load datasets
-        logger.info("Loading datasets...")
-        train_dataset = load_dataset("train", prepared_dir)
-        val_dataset = load_dataset("val", prepared_dir)
-        
-        train_loader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True)
-        val_loader = DataLoader(val_dataset, batch_size=config['batch_size'], shuffle=False)
-        
-        checkpoint_path = checkpoint_dir / "best_model.pt"
-        
-    elif args.phase == 2:
-        logger.info("="*60)
-        logger.info("PHASE 2: Fine-tuning with human feedback")
-        logger.info("="*60)
-        
-        # Load original training data + human feedback
-        logger.info("Loading datasets...")
-        train_dataset = load_dataset("train", prepared_dir)
-        feedback_dataset = load_feedback(feedback_dir)
-        
-        if feedback_dataset is None:
-            logger.error("Phase 2 requires feedback. Please annotate items first:")
-            logger.error("  1. python src/feedback.py --export --threshold 0.85")
-            logger.error("  2. Edit flagged_for_review_0.85.csv (add corrected_label)")
-            logger.error("  3. python src/feedback.py --import flagged_for_review_0.85_annotated.csv")
-            sys.exit(1)
-        
-        # Merge training data with feedback
-        train_dataset = merge_datasets(train_dataset, feedback_dataset)
-        logger.info(f"Merged dataset size: {len(train_dataset)}")
-        
-        val_dataset = load_dataset("val", prepared_dir)
-        
-        train_loader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True)
-        val_loader = DataLoader(val_dataset, batch_size=config['batch_size'], shuffle=False)
-        
-        checkpoint_path = checkpoint_dir / "phase2_model.pt"
-    
-    # Create model
-    logger.info("Creating model...")
-    model = create_model(config)
-    
-    # For Phase 2, load Phase 1 checkpoint as warm start
-    if args.phase == 2:
-        phase1_checkpoint = checkpoint_dir / "best_model.pt"
-        if phase1_checkpoint.exists():
-            logger.info(f"Loading Phase 1 checkpoint: {phase1_checkpoint}")
-            model.load_state_dict(torch.load(phase1_checkpoint, map_location='cpu'))
-        else:
-            logger.warning("Phase 1 checkpoint not found, training from scratch")
-    
-    model = model.to(device)
-    
-    # Optimizer
-    optimizer = optim.AdamW(model.parameters(), lr=config['learning_rate'])
-    
-    # Training loop
-    best_val_loss = float('inf')
-    history = []
-    
-    num_epochs = 3 if args.phase == 2 else config['num_epochs']  # Fewer epochs for Phase 2
-    
-    for epoch in range(num_epochs):
-        logger.info(f"\nEpoch {epoch + 1}/{num_epochs}")
-        
-        train_loss = train_epoch(model, train_loader, optimizer, device)
-        val_loss = validate(model, val_loader, device)
-        
-        logger.info(f"Train loss: {train_loss:.4f}, Val loss: {val_loss:.4f}")
-        
+    cfg    = load_config()
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Device: {device}")
+    if device.type == "cuda":
+        print(f"  GPU: {torch.cuda.get_device_name(0)}")
+        print(f"  VRAM: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
+
+    prepared_dir = BASE_DIR / cfg["prepared_dir"]
+    ckpt_dir     = BASE_DIR / cfg["checkpoint_dir"]
+    ckpt_dir.mkdir(parents=True, exist_ok=True)
+
+    # Data
+    print("\nLoading prepared data...")
+    train_ds = load_dataset(prepared_dir / "train.pt")
+    val_ds   = load_dataset(prepared_dir / "val.pt")
+    print(f"  Train: {len(train_ds)} samples | Val: {len(val_ds)} samples")
+
+    train_loader = DataLoader(
+        train_ds, batch_size=cfg["batch_size"], shuffle=True,
+        num_workers=2, pin_memory=device.type == "cuda",
+    )
+    val_loader = DataLoader(
+        val_ds, batch_size=cfg["batch_size"], shuffle=False,
+        num_workers=2, pin_memory=device.type == "cuda",
+    )
+
+    # Model
+    print(f"\nInitializing model: {cfg['model_name']}")
+    model = DualEncoderModel(cfg["model_name"], cfg["temperature"]).to(device)
+
+    n_params = sum(p.numel() for p in model.parameters()) / 1e6
+    print(f"  Total parameters: {n_params:.1f}M")
+
+    # Optimizer & scheduler
+    optimizer = torch.optim.AdamW(
+        model.parameters(),
+        lr=cfg["learning_rate"],
+        weight_decay=cfg["weight_decay"],
+    )
+    total_steps = len(train_loader) * cfg["num_epochs"]
+    scheduler = get_linear_schedule_with_warmup(
+        optimizer,
+        num_warmup_steps=cfg["warmup_steps"],
+        num_training_steps=total_steps,
+    )
+    scaler = GradScaler(enabled=cfg.get("fp16", True) and device.type == "cuda")
+
+    best_val_loss    = float("inf")
+    patience_counter = 0
+    history          = []
+
+    print(f"\nTraining for up to {cfg['num_epochs']} epochs "
+          f"(early stop patience={cfg['early_stopping_patience']})...\n")
+
+    for epoch in range(1, cfg["num_epochs"] + 1):
+        t0 = time.time()
+
+        train_loss = run_epoch(
+            model, train_loader, optimizer, scaler, scheduler, device, cfg, train=True
+        )
+        val_loss = run_epoch(
+            model, val_loader, optimizer, scaler, scheduler, device, cfg, train=False
+        )
+
+        elapsed = time.time() - t0
+        print(
+            f"Epoch {epoch}/{cfg['num_epochs']} | "
+            f"train_loss={train_loss:.4f} | val_loss={val_loss:.4f} | {elapsed:.1f}s"
+        )
+
         history.append({
-            'epoch': epoch + 1,
-            'phase': args.phase,
-            'train_loss': train_loss,
-            'val_loss': val_loss
+            "epoch": epoch,
+            "train_loss": round(train_loss, 6),
+            "val_loss":   round(val_loss,   6),
         })
-        
-        # Save best model
+
         if val_loss < best_val_loss:
-            best_val_loss = val_loss
-            torch.save(model.state_dict(), checkpoint_path)
-            logger.info(f"✅ Saved best model: {checkpoint_path}")
-    
-    # Save training history
-    history_path = checkpoint_dir / f"training_log_phase{args.phase}.json"
-    with open(history_path, 'w') as f:
+            best_val_loss    = val_loss
+            patience_counter = 0
+            torch.save(
+                {
+                    "epoch":            epoch,
+                    "model_state_dict": model.state_dict(),
+                    "val_loss":         best_val_loss,
+                    "config":           cfg,
+                },
+                ckpt_dir / "best_model.pt",
+            )
+            print(f"  -> Best model saved (val_loss={best_val_loss:.4f})")
+        else:
+            patience_counter += 1
+            print(
+                f"  No improvement ({patience_counter}/{cfg['early_stopping_patience']})"
+            )
+            if patience_counter >= cfg["early_stopping_patience"]:
+                print("Early stopping triggered.")
+                break
+
+    with open(ckpt_dir / "training_history.json", "w") as f:
         json.dump(history, f, indent=2)
-    logger.info(f"Saved training log: {history_path}")
-    
-    logger.info("✅ Training complete!")
-    
-    if args.phase == 1:
-        logger.info("\nNext steps:")
-        logger.info("  1. Run inference: python src/inference.py")
-        logger.info("  2. Export flagged items: python src/feedback.py --export --threshold 0.85")
-        logger.info("  3. Annotate in Excel: edit flagged_for_review_0.85.csv")
-        logger.info("  4. Import feedback: python src/feedback.py --import flagged_for_review_0.85_annotated.csv")
-        logger.info("  5. Retrain Phase 2: python src/train.py --phase 2")
-    elif args.phase == 2:
-        logger.info("\nNext steps:")
-        logger.info("  1. Run new inference: python src/inference.py --model phase2_model.pt")
-        logger.info("  2. Compare Phase 1 vs Phase 2 results!")
-        logger.info("  3. (Optionally) Repeat feedback loop for more rounds")
+
+    print(f"\nTraining complete.")
+    print(f"Best val loss:  {best_val_loss:.4f}")
+    print(f"Checkpoint:     {ckpt_dir / 'best_model.pt'}")
+    print(f"History:        {ckpt_dir / 'training_history.json'}")
+
 
 if __name__ == "__main__":
     main()

@@ -1,31 +1,35 @@
-# Dual-Encoder RBE PoC Configuration
+# Dual BERTweet Configuration
 
-# Data settings
-data_size: 50000  # Downsampled from 200K for faster iteration
-train_split: 0.7
-val_split: 0.15
-test_split: 0.15
+# Classes
+num_classes: 4
+class_labels:
+  0: "Allowed"
+  1: "Offensive Language"
+  2: "Mature Content"
+  3: "Algospeak"
 
-# Model settings
-model_name: "sentence-transformers/all-miniLM-L6-v2"  # STS-trained, 384-dim
-frozen: false  # Unfrozen: fine-tune both encoders
-embedding_dim: 384
+# Model
+model_name: "vinai/bertweet-base"
+embedding_dim: 768
+max_length: 128
 
-# Training settings
-batch_size: 16
-learning_rate: 0.0003
-num_epochs: 5
-warmup_steps: 100
+# Training
+batch_size: 32
+learning_rate: 2.0e-5
+weight_decay: 0.01
+num_epochs: 10
+warmup_steps: 200
+early_stopping_patience: 3
+fp16: true
+gradient_clip: 1.0
 
-# Loss settings
-loss_type: "contrastive"  # Contrastive loss for similarity learning
-margin: 0.5  # Margin for contrastive loss
+# Loss
+temperature: 0.07
 
-# Inference settings
-thresholds: [0.6, 0.7, 0.75, 0.8, 0.85, 0.9]  # Test multiple k values
-similarity_metric: "cosine"
-
-# Paths (relative to poc/)
-data_dir: "data"
-models_dir: "models"
-results_dir: "results"
+# Paths (relative to project root)
+train_csv: "data/splits/train.csv"
+val_csv:   "data/splits/val.csv"
+test_csv:  "data/splits/test.csv"
+prepared_dir:   "poc/data/prepared"
+checkpoint_dir: "poc/checkpoints"
+results_dir:    "poc/results"
