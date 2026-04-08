@@ -20,6 +20,7 @@ import torch
 import pandas as pd
 from pathlib import Path
 from transformers import AutoTokenizer
+import emoji
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -42,7 +43,7 @@ def prepare_split(
     max_length: int,
     split_name: str,
 ) -> dict:
-    texts  = df["text"].astype(str).tolist()
+    texts  = [emoji.demojize(t) for t in df["text"].astype(str).tolist()]
     labels = df["classification"].astype(int).tolist()
 
     # Supervised: prepend the ground-truth class label

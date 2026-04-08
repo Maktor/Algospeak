@@ -23,3 +23,12 @@ dataset_cleaning/outputs/
 .conda/
 .env
 .venv/
+
+# Model artifacts (generated — do not commit)
+poc/checkpoints/
+poc/data/
+poc/results/
+
+# Commit these specific CSVs despite *.csv rule
+!data/splits/reclassified_final.csv
+!Algospeak_experiment/synthetic_algospeak_v2.csv

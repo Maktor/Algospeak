@@ -27,6 +27,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
+import emoji
 matplotlib.use("Agg")  # non-interactive backend for saving figures
 
 from pathlib import Path
@@ -253,7 +254,7 @@ def evaluate_split(
 def classify_text(text: str, encoder, prototypes, tokenizer, max_length, device) -> dict:
     """Classify a single raw text string. Returns predicted class and similarity scores."""
     enc = tokenizer(
-        text, padding="max_length", truncation=True,
+        emoji.demojize(text), padding="max_length", truncation=True,
         max_length=max_length, return_tensors="pt",
     )
     with torch.no_grad():

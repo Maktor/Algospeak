@@ -1,39 +1,4 @@
 {
-  "gay": {
-    "pictorial": [
-      "🏳",
-      "🌈",
-      "💅"
-    ],
-    "paraphrase": [
-      "fruit emojis",
-      "fruity"
-    ]
-  },
-  "queer": {
-    "pictorial": [
-      "🏳",
-      "💅"
-    ],
-    "paraphrase": [
-      "fruit emojis",
-      "fruity"
-    ]
-  },
-  "lgbtq": {
-    "pictorial": [
-      "🌈"
-    ],
-    "paraphrase": [
-      "alphabet mafia",
-      "leg booty community"
-    ]
-  },
-  "jewish": {
-    "pictorial": [
-      "✡"
-    ]
-  },
   "porn": {
     "pictorial": [
       "🌽",
@@ -43,43 +8,6 @@
     "paraphrase": [
       "corn",
       "love"
-    ]
-  },
-  "weed": {
-    "pictorial": [
-      "🍃"
-    ],
-    "unknown_spelling": [
-      "we**"
-    ],
-    "paraphrase": [
-      "ouid"
-    ]
-  },
-  "cocaine": {
-    "pictorial": [
-      "❄"
-    ],
-    "paraphrase": [
-      "snow"
-    ]
-  },
-  "mushrooms": {
-    "pictorial": [
-      "🍄"
-    ]
-  },
-  "penis": {
-    "pictorial": [
-      "🍆",
-      "🍌"
-    ],
-    "paraphrase": [
-      "banana",
-      "eggplant",
-      "mascara",
-      "peanits",
-      "pickle"
     ]
   },
   "rape": {
@@ -110,18 +38,6 @@
       "ahh (old ahh people)"
     ]
   },
-  "nipples": {
-    "pictorial": [
-      "🍒"
-    ],
-    "unknown_spelling": [
-      "n!ppl3s"
-    ],
-    "paraphrase": [
-      "nip nops",
-      "nippies"
-    ]
-  },
   "fuck": {
     "pictorial": [
       "🍴",
@@ -150,21 +66,6 @@
       "pu$$y"
     ]
   },
-  "die": {
-    "pictorial": [
-      "💀"
-    ],
-    "unknown_spelling": [
-      "d!e",
-      "d1e"
-    ],
-    "paraphrase": [
-      "D-",
-      "push the off switch",
-      "to take a forever nap",
-      "δie"
-    ]
-  },
   "bitch": {
     "pictorial": [
       "💅"
@@ -175,16 +76,6 @@
     "paraphrase": [
       "B",
       "biiih"
-    ]
-  },
-  "bullet": {
-    "pictorial": [
-      "💥"
-    ]
-  },
-  "smoke": {
-    "pictorial": [
-      "💨"
     ]
   },
   "shit": {
@@ -201,11 +92,6 @@
       "shjt",
       "stuff",
       "syiet"
-    ]
-  },
-  "poop": {
-    "pictorial": [
-      "💩"
     ]
   },
   "kill": {
@@ -226,14 +112,6 @@
       "unalive"
     ]
   },
-  "syringe": {
-    "pictorial": [
-      "💉"
-    ],
-    "paraphrase": [
-      "pointy thing"
-    ]
-  },
   "stab": {
     "pictorial": [
       "🔪"
@@ -248,85 +126,14 @@
       "🔪"
     ]
   },
-  "knife": {
-    "pictorial": [
-      "🔪"
-    ],
-    "unknown_spelling": [
-      "kn1fe"
-    ]
-  },
-  "gun": {
-    "pictorial": [
-      "🔫"
-    ],
-    "paraphrase": [
-      "g-n",
-      "one tool in particular",
-      "pew pew"
-    ]
-  },
-  "firearms": {
-    "pictorial": [
-      "🔫"
-    ]
-  },
-  "balls": {
-    "pictorial": [
-      "⚽🏀"
-    ],
-    "paraphrase": [
-      "marbles"
-    ]
-  },
-  "mushroom honey": {
-    "pictorial": [
-      "🍄🍯",
-      "🍄 honey"
-    ]
-  },
   "boobs": {
     "pictorial": [
       "🍈🍈"
     ]
   },
-  "rimm": {
-    "pictorial": [
-      "🍑👅"
-    ]
-  },
-  "bullshit": {
-    "pictorial": [
-      "🐂💩"
-    ],
-    "abbreviation": [
-      "B.S."
-    ],
-    "unknown_spelling": [
-      "b@l$**t"
-    ]
-  },
-  "diarrhea": {
-    "pictorial": [
-      "💥💩💥"
-    ]
-  },
   "pornhub": {
     "pictorial": [
       "🖤🧡"
-    ]
-  },
-  "brainwashing": {
-    "pictorial": [
-      "🧠🧼"
-    ]
-  },
-  "marijuana": {
-    "pictorial": [
-      "😈🥬"
-    ],
-    "paraphrase": [
-      "oregano"
     ]
   },
   "fucking": {
@@ -348,138 +155,14 @@
       "fuhn"
     ]
   },
-  "rapist": {
-    "pictorial": [
-      "🍇ist"
-    ],
-    "unknown_spelling": [
-      "r4pi$ts"
-    ],
-    "paraphrase": [
-      "grapist"
-    ]
-  },
-  "genocide": {
-    "pictorial": [
-      "👖ocide",
-      "jen-🥱-cide"
-    ],
-    "unknown_spelling": [
-      "g3nocid3",
-      "gen*side",
-      "gen0c1d3 (mass gen0c1d3)"
-    ],
-    "paraphrase": [
-      "jen-o-side"
-    ]
-  },
-  "abusive": {
-    "pictorial": [
-      "🆎usive"
-    ],
-    "unknown_spelling": [
-      "Abu5ive"
-    ]
-  },
-  "bullying": {
-    "pictorial": [
-      "🅱ully!ng"
-    ]
-  },
-  "handjob": {
-    "pictorial": [
-      "✊ job"
-    ]
-  },
   "blowjob": {
     "pictorial": [
       "🌬 job"
     ]
   },
-  "eating me up": {
-    "pictorial": [
-      "😋 me up"
-    ]
-  },
-  "queer couples": {
-    "pictorial": [
-      "🌈 couples"
-    ]
-  },
-  "onlyfans creator": {
-    "pictorial": [
-      "🌶 creator"
-    ]
-  },
-  "only fans": {
-    "pictorial": [
-      "🌶 page"
-    ],
-    "paraphrase": [
-      "Accountant site",
-      "pans"
-    ]
-  },
-  "slowly dying": {
-    "pictorial": [
-      "💀 era"
-    ]
-  },
-  "most radioactive": {
-    "pictorial": [
-      "☢spiciest☢"
-    ]
-  },
-  "trump supporter": {
-    "pictorial": [
-      "💩 supporter"
-    ]
-  },
-  "white people": {
-    "pictorial": [
-      "⚪ people",
-      "🤚 people"
-    ],
-    "paraphrase": [
-      "crackers",
-      "saltines"
-    ]
-  },
-  "black children": {
-    "pictorial": [
-      "🖤 children"
-    ]
-  },
-  "bloody hell": {
-    "paraphrase": [
-      "….. hell"
-    ]
-  },
-  "insanity": {
-    "unknown_spelling": [
-      "!nsanity"
-    ]
-  },
-  "abducted": {
-    "unknown_spelling": [
-      "@bducted",
-      "ab***ted"
-    ]
-  },
-  "alcohol": {
-    "unknown_spelling": [
-      "@lc0h0l",
-      "ach0hl"
-    ]
-  },
   "anal": {
     "unknown_spelling": [
       "@nal"
-    ]
-  },
-  "anorexia": {
-    "unknown_spelling": [
-      "@norex!a"
     ]
   },
   "assault": {
@@ -493,26 +176,6 @@
       "att@cked"
     ]
   },
-  "saboxone": {
-    "unknown_spelling": [
-      "$aboxone"
-    ]
-  },
-  "shitting": {
-    "unknown_spelling": [
-      "$hittin"
-    ]
-  },
-  "sterilised": {
-    "unknown_spelling": [
-      "$t€rilis€d"
-    ]
-  },
-  "strip club": {
-    "unknown_spelling": [
-      "$trip club"
-    ]
-  },
   "erotic": {
     "unknown_spelling": [
       "3r0tic"
@@ -523,108 +186,10 @@
       "3sum"
     ]
   },
-  "foreplay": {
-    "unknown_spelling": [
-      "4play"
-    ]
-  },
-  "blm": {
-    "pictorial": [
-      "6|m"
-    ]
-  },
   "asshole": {
     "unknown_spelling": [
       "a**hole",
       "a$$hole"
-    ]
-  },
-  "abuse": {
-    "unknown_spelling": [
-      "ab*se",
-      "abu5e"
-    ],
-    "paraphrase": [
-      "ab()se"
-    ]
-  },
-  "abortion": {
-    "unknown_spelling": [
-      "ab**tion",
-      "ab0r$sion"
-    ],
-    "paraphrase": [
-      "abor-shan",
-      "camping",
-      "procedure",
-      "termination"
-    ]
-  },
-  "abortifacients": {
-    "paraphrase": [
-      "aborifashins"
-    ]
-  },
-  "sex worker": {
-    "paraphrase": [
-      "accountant"
-    ]
-  },
-  "only fans creator": {
-    "paraphrase": [
-      "accountant"
-    ]
-  },
-  "autistic": {
-    "paraphrase": [
-      "acoustic"
-    ]
-  },
-  "addiction": {
-    "unknown_spelling": [
-      "add1ction",
-      "add1tion",
-      "addicti0n"
-    ]
-  },
-  "as fuck": {
-    "abbreviation": [
-      "AF"
-    ]
-  },
-  "amputation": {
-    "paraphrase": [
-      "ampu/tation"
-    ]
-  },
-  "antisemitism": {
-    "unknown_spelling": [
-      "antiSem!tism"
-    ]
-  },
-  "attacks": {
-    "unknown_spelling": [
-      "att@cks"
-    ]
-  },
-  "attempted assasination": {
-    "pictorial": [
-      "attempted ☠ing"
-    ]
-  },
-  "ayahuasca": {
-    "unknown_spelling": [
-      "ayahua$ca"
-    ]
-  },
-  "billionaire": {
-    "unknown_spelling": [
-      "b*llionaire"
-    ]
-  },
-  "boob": {
-    "unknown_spelling": [
-      "b00b"
     ]
   },
   "bomb": {
@@ -632,194 +197,9 @@
       "b0mb"
     ]
   },
-  "bombs": {
-    "unknown_spelling": [
-      "b0mbs"
-    ]
-  },
   "beaten": {
     "unknown_spelling": [
       "b3@ten"
-    ]
-  },
-  "suicide": {
-    "unknown_spelling": [
-      "s***ide",
-      "su!c!de",
-      "su*c*de"
-    ],
-    "paraphrase": [
-      "bathtub unalive",
-      "push the off switch",
-      "sewer slide",
-      "suey side",
-      "to take a forever nap",
-      "toaster bath",
-      "unalive"
-    ]
-  },
-  "adhd": {
-    "paraphrase": [
-      "beeped"
-    ]
-  },
-  "beheaded": {
-    "unknown_spelling": [
-      "behe@ded"
-    ]
-  },
-  "besieged": {
-    "unknown_spelling": [
-      "besieg3d"
-    ]
-  },
-  "bitches": {
-    "paraphrase": [
-      "bîches",
-      "bishes"
-    ]
-  },
-  "bisexual": {
-    "paraphrase": [
-      "biseggsual"
-    ]
-  },
-  "blood": {
-    "unknown_spelling": [
-      "bl0d",
-      "blo0d"
-    ]
-  },
-  "link in bio": {
-    "unknown_spelling": [
-      "l!nk !n b!o"
-    ],
-    "paraphrase": [
-      "blink in lio"
-    ]
-  },
-  "brain death": {
-    "pictorial": [
-      "brain d☠ath"
-    ]
-  },
-  "a massage": {
-    "paraphrase": [
-      "bring women to the conclusion of"
-    ]
-  },
-  "cigarette": {
-    "unknown_spelling": [
-      "c!garette"
-    ]
-  },
-  "cigarettes": {
-    "unknown_spelling": [
-      "c!garettes"
-    ]
-  },
-  "cancer": {
-    "unknown_spelling": [
-      "c*ncer"
-    ]
-  },
-  "corpses": {
-    "unknown_spelling": [
-      "c0rpses"
-    ]
-  },
-  "cadaver": {
-    "unknown_spelling": [
-      "cadav3r"
-    ]
-  },
-  "pills": {
-    "paraphrase": [
-      "candies",
-      "mystery candies"
-    ]
-  },
-  "cause of death": {
-    "paraphrase": [
-      "cause of being unalive"
-    ]
-  },
-  "serial killer": {
-    "pictorial": [
-      "cereal 🥣 spiller"
-    ],
-    "paraphrase": [
-      "serial unaliver"
-    ]
-  },
-  "concentration camp": {
-    "paraphrase": [
-      "certain kind of camp"
-    ]
-  },
-  "child neglect": {
-    "unknown_spelling": [
-      "ch!ld n3gl3ct"
-    ]
-  },
-  "choked": {
-    "unknown_spelling": [
-      "ch0k3d"
-    ]
-  },
-  "choking": {
-    "unknown_spelling": [
-      "ch0kIng"
-    ]
-  },
-  "child pornography": {
-    "paraphrase": [
-      "cheese pizza"
-    ]
-  },
-  "clitoral": {
-    "unknown_spelling": [
-      "clit*ral"
-    ]
-  },
-  "pornography website": {
-    "paraphrase": [
-      "conrography website"
-    ]
-  },
-  "constipation": {
-    "paraphrase": [
-      "constipashun"
-    ]
-  },
-  "convicted": {
-    "unknown_spelling": [
-      "conv!cted"
-    ]
-  },
-  "conviction": {
-    "unknown_spelling": [
-      "conv1ction"
-    ]
-  },
-  "crimes": {
-    "unknown_spelling": [
-      "cr!mes"
-    ]
-  },
-  "crack": {
-    "pictorial": [
-      "cr❄ck"
-    ]
-  },
-  "crisis": {
-    "unknown_spelling": [
-      "cr1sis"
-    ]
-  },
-  "communism": {
-    "paraphrase": [
-      "čümmunism"
     ]
   },
   "cunt": {
@@ -827,154 +207,14 @@
       "cvnt"
     ]
   },
-  "cunty": {
-    "paraphrase": [
-      "cvnty"
-    ]
-  },
-  "death": {
-    "abbreviation": [
-      "D E A T H"
-    ],
-    "unknown_spelling": [
-      "d3ath"
-    ],
-    "paraphrase": [
-      "daathh",
-      "push the off switch",
-      "to take a forever nap",
-      "unalive"
-    ]
-  },
-  "daddy": {
-    "paraphrase": [
-      "d/ddy"
-    ]
-  },
-  "died": {
-    "unknown_spelling": [
-      "d1£d"
-    ],
-    "paraphrase": [
-      "d/ied",
-      "dipped",
-      "expired",
-      "passed"
-    ]
-  },
-  "dollars": {
-    "unknown_spelling": [
-      "d0llars"
-    ]
-  },
-  "dominant": {
-    "unknown_spelling": [
-      "d0m"
-    ]
-  },
-  "disappear": {
-    "unknown_spelling": [
-      "d1sapp3ar"
-    ]
-  },
-  "anti-vaccine groups on": {
-    "paraphrase": [
-      "dance party",
-      "dinner party"
-    ]
-  },
-  "deathly": {
-    "unknown_spelling": [
-      "de@thly"
-    ]
-  },
-  "kill myself": {
-    "unknown_spelling": [
-      "de4d myself"
-    ],
-    "paraphrase": [
-      "erase myself",
-      "kms"
-    ]
-  },
   "dick": {
     "paraphrase": [
       "deck"
     ]
   },
-  "depressed": {
-    "unknown_spelling": [
-      "depr3$zed"
-    ]
-  },
-  "depression": {
-    "paraphrase": [
-      "depreshun"
-    ]
-  },
-  "destroyed": {
-    "paraphrase": [
-      "destrOved"
-    ]
-  },
   "slut": {
     "paraphrase": [
       "dirty girl"
-    ]
-  },
-  "masturbates": {
-    "paraphrase": [
-      "DIYs"
-    ]
-  },
-  "vagina": {
-    "paraphrase": [
-      "down there",
-      "taco",
-      "V"
-    ]
-  },
-  "drugs": {
-    "unknown_spelling": [
-      "dr***",
-      "dr*gs"
-    ]
-  },
-  "drug abuse": {
-    "unknown_spelling": [
-      "drüg @büse"
-    ]
-  },
-  "domestic violence": {
-    "abbreviation": [
-      "DV"
-    ]
-  },
-  "dying": {
-    "unknown_spelling": [
-      "dy!ng"
-    ]
-  },
-  "eat out": {
-    "unknown_spelling": [
-      "eat 0ut"
-    ]
-  },
-  "eating disorder": {
-    "paraphrase": [
-      "êatińg disòrdèr"
-    ]
-  },
-  "fucked up": {
-    "paraphrase": [
-      "effed up",
-      "fv¢ked up"
-    ]
-  },
-  "kill oneself": {
-    "paraphrase": [
-      "end oneself",
-      "off herself (oneself)"
     ]
   },
   "killed": {
@@ -996,245 +236,9 @@
       "k___ing"
     ]
   },
-  "enslaved": {
-    "unknown_spelling": [
-      "ensl@ved"
-    ]
-  },
-  "sa": {
-    "paraphrase": [
-      "essay",
-      "mascara"
-    ]
-  },
-  "euthanasia": {
-    "unknown_spelling": [
-      "euthan*sia"
-    ]
-  },
-  "exploited": {
-    "unknown_spelling": [
-      "expl0it3d"
-    ]
-  },
-  "felon": {
-    "unknown_spelling": [
-      "f3l0n"
-    ]
-  },
-  "fentanyl": {
-    "unknown_spelling": [
-      "f3nt@nyl"
-    ]
-  },
-  "famine": {
-    "unknown_spelling": [
-      "f4mine"
-    ]
-  },
-  "fetishizing": {
-    "unknown_spelling": [
-      "fetishi*zing"
-    ]
-  },
-  "flesh-like": {
-    "paraphrase": [
-      "fl£sh-like"
-    ]
-  },
-  "dead": {
-    "paraphrase": [
-      "flattened",
-      "uh-oh"
-    ]
-  },
-  "motherfucking": {
-    "paraphrase": [
-      "fothermucking"
-    ]
-  },
-  "freak the fuck out": {
-    "pictorial": [
-      "freak the 🦆 out"
-    ]
-  },
-  "fuck this shit": {
-    "paraphrase": [
-      "fuh this shish"
-    ]
-  },
-  "fucking movie": {
-    "paraphrase": [
-      "fun movie"
-    ]
-  },
-  "goddammit": {
-    "paraphrase": [
-      "G damn it"
-    ]
-  },
-  "gaza": {
-    "pictorial": [
-      "G🍉"
-    ],
-    "unknown_spelling": [
-      "G@za"
-    ]
-  },
-  "goddamn": {
-    "unknown_spelling": [
-      "g0ddamn"
-    ]
-  },
-  "smoking weed": {
-    "paraphrase": [
-      "gardening"
-    ]
-  },
-  "gaslight": {
-    "unknown_spelling": [
-      "gasl1ght"
-    ]
-  },
-  "get in the mood": {
-    "paraphrase": [
-      "get spicy"
-    ]
-  },
-  "have sex": {
-    "unknown_spelling": [
-      "go r@w"
-    ],
-    "paraphrase": [
-      "get spicy"
-    ]
-  },
-  "lesbian": {
-    "unknown_spelling": [
-      "le$bean",
-      "le$bian"
-    ],
-    "paraphrase": [
-      "girl in red",
-      "le dollar bean"
-    ]
-  },
-  "give a fuck": {
-    "pictorial": [
-      "give a 🦆"
-    ],
-    "paraphrase": [
-      "give a frick"
-    ]
-  },
-  "grooming": {
-    "unknown_spelling": [
-      "gr00m!ng",
-      "gr00mlng"
-    ]
-  },
-  "guillotined": {
-    "unknown_spelling": [
-      "guillo**ned"
-    ]
-  },
-  "harassment": {
-    "unknown_spelling": [
-      "h@ra$$ment"
-    ]
-  },
-  "hooker": {
-    "unknown_spelling": [
-      "h**ker"
-    ]
-  },
-  "hate crime": {
-    "unknown_spelling": [
-      "h*te crime"
-    ]
-  },
-  "hitler": {
-    "unknown_spelling": [
-      "H*tler"
-    ]
-  },
-  "homicidal": {
-    "unknown_spelling": [
-      "h0m!cidal"
-    ]
-  },
-  "homophobic": {
-    "unknown_spelling": [
-      "h0m0ph0bic"
-    ]
-  },
-  "hell": {
-    "unknown_spelling": [
-      "h3ll",
-      "hel1"
-    ]
-  },
-  "hate": {
-    "unknown_spelling": [
-      "h8"
-    ],
-    "paraphrase": [
-      "opposite of love"
-    ]
-  },
-  "hamas": {
-    "unknown_spelling": [
-      "Ham@s"
-    ]
-  },
-  "oral sex": {
-    "paraphrase": [
-      "hanging out downtown"
-    ]
-  },
-  "holocaust": {
-    "paraphrase": [
-      "hcaust"
-    ]
-  },
-  "goddamn (lobby)": {
-    "paraphrase": [
-      "heavenly (lobby)"
-    ]
-  },
-  "high": {
-    "paraphrase": [
-      "hi"
-    ]
-  },
-  "holy shit": {
-    "unknown_spelling": [
-      "holy ****"
-    ]
-  },
-  "homicide": {
-    "unknown_spelling": [
-      "hom!c!de"
-    ]
-  },
-  "homophobia": {
-    "paraphrase": [
-      "home of phobia"
-    ]
-  },
-  "marijuana concentrate": {
-    "paraphrase": [
-      "honey"
-    ]
-  },
   "breasts": {
     "paraphrase": [
       "honk honks"
-    ]
-  },
-  "homophobe": {
-    "unknown_spelling": [
-      "hop0phob3"
     ]
   },
   "whore": {
@@ -1242,100 +246,14 @@
       "horse"
     ]
   },
-  "hungover": {
-    "unknown_spelling": [
-      "hung0ver"
-    ],
-    "paraphrase": [
-      "hungovaaa"
-    ]
-  },
-  "israeli": {
-    "unknown_spelling": [
-      "I$r@eli"
-    ]
-  },
   "incest": {
     "unknown_spelling": [
       "inc3st"
     ]
   },
-  "a pedophile": {
-    "paraphrase": [
-      "Jeff"
-    ]
-  },
-  "pedophilia": {
-    "paraphrase": [
-      "Jeff"
-    ]
-  },
   "kink": {
     "unknown_spelling": [
       "k!nk"
-    ]
-  },
-  "kidnapped": {
-    "unknown_spelling": [
-      "k*dn@pped"
-    ]
-  },
-  "killer": {
-    "unknown_spelling": [
-      "k*ller"
-    ]
-  },
-  "ketamine": {
-    "unknown_spelling": [
-      "ketamin3"
-    ]
-  },
-  "ludes": {
-    "unknown_spelling": [
-      "L*des"
-    ]
-  },
-  "lsd": {
-    "unknown_spelling": [
-      "l$d"
-    ]
-  },
-  "looted": {
-    "unknown_spelling": [
-      "l00ted"
-    ]
-  },
-  "commit suicide": {
-    "paraphrase": [
-      "leave planet earth"
-    ]
-  },
-  "a fetish": {
-    "paraphrase": [
-      "likeish"
-    ]
-  },
-  "love bombing": {
-    "pictorial": [
-      "love💣ing"
-    ]
-  },
-  "miscarriage": {
-    "unknown_spelling": [
-      "m!$¢arr!açe"
-    ]
-  },
-  "minor": {
-    "unknown_spelling": [
-      "m!n0r"
-    ]
-  },
-  "masturbation": {
-    "unknown_spelling": [
-      "m@$turbAt!on"
-    ],
-    "paraphrase": [
-      "self-pleasure"
     ]
   },
   "massacre": {
@@ -1354,62 +272,9 @@
       "ünalive"
     ]
   },
-  "maniac": {
-    "unknown_spelling": [
-      "m4niac"
-    ]
-  },
-  "mafia": {
-    "unknown_spelling": [
-      "maf!@"
-    ]
-  },
-  "manslaughter": {
-    "paraphrase": [
-      "mans laughter"
-    ]
-  },
-  "boyfriend": {
-    "paraphrase": [
-      "mascara"
-    ]
-  },
-  "mass shootings": {
-    "paraphrase": [
-      "mass pew pews"
-    ]
-  },
-  "microdosing": {
-    "unknown_spelling": [
-      "micr0d0$ing"
-    ]
-  },
-  "midget": {
-    "unknown_spelling": [
-      "mid*et"
-    ]
-  },
-  "mindfucking": {
-    "unknown_spelling": [
-      "MINDF**K"
-    ],
-    "paraphrase": [
-      "mindbending"
-    ]
-  },
-  "missionary": {
-    "unknown_spelling": [
-      "missi0nary"
-    ]
-  },
   "motherfucker": {
     "unknown_spelling": [
       "motherf****"
-    ]
-  },
-  "murderers": {
-    "paraphrase": [
-      "mukdukers"
     ]
   },
   "nigger": {
@@ -1422,29 +287,6 @@
       "n*de"
     ]
   },
-  "negev": {
-    "unknown_spelling": [
-      "N3gev"
-    ]
-  },
-  "narcotics": {
-    "unknown_spelling": [
-      "narcotic$"
-    ]
-  },
-  "nazi": {
-    "pictorial": [
-      "not 🌊"
-    ],
-    "paraphrase": [
-      "not see"
-    ]
-  },
-  "nuke": {
-    "unknown_spelling": [
-      "nuk3"
-    ]
-  },
   "orgasm": {
     "unknown_spelling": [
       "org*sm"
@@ -1453,124 +295,10 @@
       "o"
     ]
   },
-  "overdosed": {
-    "paraphrase": [
-      "OD’d"
-    ]
-  },
-  "overdose": {
-    "unknown_spelling": [
-      "ov3rd0se"
-    ]
-  },
-  "pedophile": {
-    "paraphrase": [
-      "p word",
-      "PDF file"
-    ]
-  },
-  "patreon": {
-    "pictorial": [
-      "pa🌲on"
-    ],
-    "unknown_spelling": [
-      "p@treon"
-    ]
-  },
-  "pedophiles": {
-    "unknown_spelling": [
-      "p*d*files"
-    ]
-  },
-  "porn star": {
-    "pictorial": [
-      "P⭐"
-    ]
-  },
-  "pipes": {
-    "unknown_spelling": [
-      "p1p3s"
-    ]
-  },
-  "painkillers": {
-    "unknown_spelling": [
-      "painki!!ers"
-    ]
-  },
-  "pandemic": {
-    "paraphrase": [
-      "panda express",
-      "panini",
-      "panorama"
-    ]
-  },
-  "pansexuals": {
-    "paraphrase": [
-      "pans£xuals"
-    ]
-  },
-  "penelope taint": {
-    "unknown_spelling": [
-      "Penelope TA!NT"
-    ]
-  },
-  "predator": {
-    "unknown_spelling": [
-      "pr3dat0r"
-    ]
-  },
-  "prisoners": {
-    "unknown_spelling": [
-      "pris0ners"
-    ]
-  },
-  "pro-anorexia": {
-    "paraphrase": [
-      "pro-ana"
-    ]
-  },
-  "propaganda": {
-    "paraphrase": [
-      "prop again duh"
-    ]
-  },
-  "psilocybin": {
-    "unknown_spelling": [
-      "psil0cybin"
-    ]
-  },
-  "psychedeics": {
-    "unknown_spelling": [
-      "psyched3lics"
-    ]
-  },
-  "quarter life crisis": {
-    "unknown_spelling": [
-      "quarter life cr1sis"
-    ]
-  },
   "raped": {
     "unknown_spelling": [
       "r@p3d",
       "r****"
-    ]
-  },
-  "racists": {
-    "unknown_spelling": [
-      "r4cists"
-    ]
-  },
-  "racism": {
-    "unknown_spelling": [
-      "rac1sm"
-    ],
-    "paraphrase": [
-      "ray • sicm"
-    ]
-  },
-  "rat carcass": {
-    "unknown_spelling": [
-      "rat carc*ss"
     ]
   },
   "murdered": {
@@ -1578,16 +306,6 @@
       "redrumed",
       "shmurdered",
       "un alived"
-    ]
-  },
-  "rhinoplasty": {
-    "unknown_spelling": [
-      "rhin0plasty"
-    ]
-  },
-  "sexually assaulted": {
-    "paraphrase": [
-      "S assaulted"
     ]
   },
   "sex": {
@@ -1608,16 +326,6 @@
       "spicy time"
     ]
   },
-  "sexual assault": {
-    "unknown_spelling": [
-      "S@"
-    ]
-  },
-  "gender": {
-    "unknown_spelling": [
-      "s*x"
-    ]
-  },
   "sexual": {
     "pictorial": [
       "s🍳👞al"
@@ -1627,46 +335,6 @@
     ],
     "paraphrase": [
       "seggsual"
-    ]
-  },
-  "sexualize": {
-    "unknown_spelling": [
-      "s3xualize"
-    ]
-  },
-  "sexual assult": {
-    "abbreviation": [
-      "SA"
-    ]
-  },
-  "sexually assulted": {
-    "paraphrase": [
-      "SAed"
-    ]
-  },
-  "sexually assulting": {
-    "paraphrase": [
-      "SAing"
-    ]
-  },
-  "fuck that shit": {
-    "paraphrase": [
-      "screw that shish"
-    ]
-  },
-  "self-sabotage": {
-    "unknown_spelling": [
-      "Self-sab0tage"
-    ]
-  },
-  "serial rapist": {
-    "paraphrase": [
-      "serial grapist"
-    ]
-  },
-  "sexism": {
-    "unknown_spelling": [
-      "sex1sm"
     ]
   },
   "shot": {
@@ -1681,288 +349,14 @@
       "sho0ting"
     ]
   },
-  "shooter": {
-    "unknown_spelling": [
-      "sh00ter"
-    ]
-  },
-  "shots": {
-    "paraphrase": [
-      "shawtz"
-    ]
-  },
-  "being high from mushrooms": {
-    "unknown_spelling": [
-      "shroom tr1p"
-    ]
-  },
-  "shut up": {
-    "paraphrase": [
-      "shush up"
-    ]
-  },
-  "shut the fuck up": {
-    "paraphrase": [
-      "shut the F up"
-    ]
-  },
-  "slept": {
-    "unknown_spelling": [
-      "sl3pt"
-    ]
-  },
-  "sleeping pill": {
-    "unknown_spelling": [
-      "sleeping p!ll"
-    ]
-  },
-  "botox": {
-    "paraphrase": [
-      "smoshmox"
-    ]
-  },
-  "soldiers": {
-    "unknown_spelling": [
-      "sold1ers"
-    ]
-  },
-  "spanking": {
-    "unknown_spelling": [
-      "sp@nking"
-    ]
-  },
-  "spam": {
-    "unknown_spelling": [
-      "sp4m"
-    ]
-  },
   "sexy": {
     "paraphrase": [
       "spicy"
     ]
   },
-  "sex drive": {
-    "paraphrase": [
-      "spicy drive"
-    ]
-  },
-  "sex educator": {
-    "paraphrase": [
-      "spicy educator"
-    ]
-  },
   "vibrator": {
     "paraphrase": [
       "spicy eggplant"
-    ]
-  },
-  "sex life": {
-    "paraphrase": [
-      "spicy life"
-    ]
-  },
-  "starvation": {
-    "unknown_spelling": [
-      "st@rv@tion"
-    ]
-  },
-  "suicidal": {
-    "unknown_spelling": [
-      "su!c!dal"
-    ],
-    "paraphrase": [
-      "suicdal"
-    ]
-  },
-  "submissive": {
-    "paraphrase": [
-      "súb"
-    ]
-  },
-  "supremacist": {
-    "unknown_spelling": [
-      "suprem@cist"
-    ]
-  },
-  "swaztika": {
-    "unknown_spelling": [
-      "sw@ztika"
-    ]
-  },
-  "vaccinated people": {
-    "paraphrase": [
-      "swimmers"
-    ]
-  },
-  "tampon": {
-    "unknown_spelling": [
-      "t@mpon"
-    ]
-  },
-  "tiktok shop": {
-    "unknown_spelling": [
-      "t*kt*k shop"
-    ]
-  },
-  "terrorism": {
-    "unknown_spelling": [
-      "t*rrorism"
-    ]
-  },
-  "torture": {
-    "unknown_spelling": [
-      "t0rture"
-    ],
-    "paraphrase": [
-      "törture"
-    ]
-  },
-  "tossers": {
-    "unknown_spelling": [
-      "t0ssers"
-    ]
-  },
-  "titties": {
-    "unknown_spelling": [
-      "t1tt1es"
-    ]
-  },
-  "self-harm": {
-    "paraphrase": [
-      "take the phone case off"
-    ]
-  },
-  "sde teiman": {
-    "unknown_spelling": [
-      "Te!man"
-    ]
-  },
-  "the fuck": {
-    "pictorial": [
-      "the 🦆"
-    ],
-    "paraphrase": [
-      "the eff"
-    ]
-  },
-  "trafficker": {
-    "unknown_spelling": [
-      "tr*fficker"
-    ]
-  },
-  "trip": {
-    "unknown_spelling": [
-      "tr1p"
-    ]
-  },
-  "transgender": {
-    "paraphrase": [
-      "trendsginger"
-    ]
-  },
-  "trauma": {
-    "paraphrase": [
-      "troöma"
-    ]
-  },
-  "traumatized": {
-    "paraphrase": [
-      "tröomatiZed"
-    ]
-  },
-  "twerks": {
-    "unknown_spelling": [
-      "twerk$"
-    ]
-  },
-  "unethical": {
-    "unknown_spelling": [
-      "un3thical"
-    ]
-  },
-  "suicide note": {
-    "paraphrase": [
-      "unalive note"
-    ]
-  },
-  "(mass) genocide": {
-    "paraphrase": [
-      "unaliving (mass unaliving)"
-    ]
-  },
-  "killing my vibe": {
-    "paraphrase": [
-      "unaliving my vibe"
-    ]
-  },
-  "virginity": {
-    "paraphrase": [
-      "V card",
-      "virginia tea"
-    ]
-  },
-  "vodka": {
-    "unknown_spelling": [
-      "v@#ka"
-    ]
-  },
-  "vape": {
-    "unknown_spelling": [
-      "v@pe"
-    ]
-  },
-  "vaping": {
-    "unknown_spelling": [
-      "v@ping"
-    ]
-  },
-  "violence": {
-    "unknown_spelling": [
-      "v10l3nc3"
-    ]
-  },
-  "vibrators": {
-    "unknown_spelling": [
-      "vibr*tors"
-    ]
-  },
-  "wagner": {
-    "unknown_spelling": [
-      "W@gner"
-    ]
-  },
-  "war": {
-    "unknown_spelling": [
-      "w@r",
-      "w4r"
-    ],
-    "paraphrase": [
-      "wa.r"
-    ]
-  },
-  "weapon": {
-    "unknown_spelling": [
-      "w€@p0n",
-      "w3@pon"
-    ]
-  },
-  "weaponized": {
-    "paraphrase": [
-      "weaponïzed"
-    ]
-  },
-  "what the fuck": {
-    "pictorial": [
-      "what the 🦆"
-    ],
-    "paraphrase": [
-      "what the F",
-      "what the fruit"
-    ]
-  },
-  "prostitutes": {
-    "paraphrase": [
-      "women of the night"
     ]
   }
 }

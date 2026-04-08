@@ -18,6 +18,8 @@ Improved algospeak generator. Key changes over synthetic_data.py:
    - Algospeak_experiment/transformation_log_v2.csv
 """
 
+import sys
+import io
 import pandas as pd
 import openai
 import os
@@ -27,6 +29,13 @@ import time
 import random
 from dotenv import load_dotenv
 import argparse
+
+# Ensure stdout can handle emojis returned by GPT pictorial transformations.
+# On Windows the default console encoding (cp1252) can't encode most emoji.
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+elif hasattr(sys.stdout, 'buffer'):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
 load_dotenv()
 

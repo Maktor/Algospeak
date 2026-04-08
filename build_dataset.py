@@ -184,6 +184,20 @@ def stage1(args):
 
     df = load_classified(args.min_words)
 
+    # Change C: exclude posts already processed by synthetic_data_v2.py from candidate pool
+    # so they are never re-selected as new sources (avoids re-generating duplicates).
+    if SYNTHETIC_CSV.exists():
+        try:
+            existing_synth = pd.read_csv(SYNTHETIC_CSV, usecols=["original_text"],
+                                         encoding="utf-8-sig")
+            already_done = set(existing_synth["original_text"].dropna().astype(str))
+            before = len(df)
+            df = df[~df["text"].isin(already_done)].copy()
+            logger.info(f"  Excluding {len(already_done)} already-processed synthetic source posts "
+                        f"from candidate pool ({before - len(df)} removed)")
+        except Exception as e:
+            logger.warning(f"  Could not load existing synthetic output to filter candidates: {e}")
+
     # Pick args.target posts evenly from class 1 and class 2 as algospeak sources.
     # These will be fed to synthetic_data.py to generate class 3 algospeak versions.
     # They are excluded from the class 1/2 training pool to prevent leakage
@@ -208,8 +222,19 @@ def stage1(args):
     all_sources[["text", "classification"]].to_csv(ALGO_SOURCES_CSV, index=False)
     logger.info(f"  Written to: {ALGO_SOURCES_CSV}")
 
-    # Write class 0/1/2 pool with source posts removed (leakage prevention)
+    # Write class 0/1/2 pool with source posts removed (leakage prevention).
+    # Change B: also exclude all historical synthetic-source originals so that posts
+    # generated in a previous run never re-enter class 1/2 training data.
     source_texts = set(all_sources["text"].tolist())
+    if SYNTHETIC_CSV.exists():
+        try:
+            existing_synth = pd.read_csv(SYNTHETIC_CSV, usecols=["original_text"],
+                                         encoding="utf-8-sig")
+            historical = set(existing_synth["original_text"].dropna().astype(str))
+            source_texts = source_texts | historical
+            logger.info(f"  Also excluding {len(historical)} historical synthetic-source posts from pool")
+        except Exception as e:
+            logger.warning(f"  Could not load historical synthetic originals for pool exclusion: {e}")
     pool = df[~df["text"].isin(source_texts)][["text", "classification"]]
     pool.to_csv(POOL_CSV, index=False)
     logger.info(f"  Written class 0/1/2 pool ({len(pool):,} posts) to: {POOL_CSV}")
@@ -372,7 +397,14 @@ def main():
                         help="Fraction of data for test (default: 0.1)")
     parser.add_argument("--seed", type=int, default=42,
                         help="Random seed (default: 42)")
+    parser.add_argument("--source", type=Path, default=None,
+                        help="Override input classified CSV (default: final_classified_data/classified_data.csv)")
     args = parser.parse_args()
+
+    if args.source:
+        global CLASSIFIED_CSV
+        CLASSIFIED_CSV = args.source
+        logger.info(f"Using custom source CSV: {CLASSIFIED_CSV}")
 
     logger.info(f"Config: target={args.target} per class, min_words={args.min_words}, "
                 f"val={args.val_frac}, test={args.test_frac}, seed={args.seed}")
