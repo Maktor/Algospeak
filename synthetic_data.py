@@ -1,7 +1,7 @@
 """
-synthetic_data_v2.py
+synthetic_data.py
 
-Improved algospeak generator. Key changes over synthetic_data.py:
+Algospeak generator using per-term technique assignment and dictionary-anchored hints.
 
 1. PER-TERM TECHNIQUE ASSIGNMENT: each deny term in a post gets its own independently
    sampled technique, producing mixed-technique posts that mirror real-world algospeak.
@@ -13,13 +13,14 @@ Improved algospeak generator. Key changes over synthetic_data.py:
    - Abbreviation: constrained to the known options from the hints file when available.
    - Paraphrase: soft-steered toward known community paraphrases when available.
 
-3. Outputs to separate files so v1 data is never overwritten:
-   - Algospeak_experiment/synthetic_algospeak_v2.csv
-   - Algospeak_experiment/transformation_log_v2.csv
+Outputs:
+   - Algospeak_experiment/synthetic_algospeak.csv
+   - Algospeak_experiment/transformation_log.csv
 """
 
 import sys
 import io
+from pathlib import Path
 import pandas as pd
 import openai
 import os
@@ -45,9 +46,9 @@ load_dotenv()
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 EXPERIMENT_DIR = os.path.join(BASE_DIR, "Algospeak_experiment")
 INPUT_FILE = os.path.join(BASE_DIR, "data", "splits", "algospeak_sources.csv")
-OUTPUT_FILE = os.path.join(EXPERIMENT_DIR, "synthetic_algospeak_v2.csv")
-DENY_LIST_FILE = os.path.join(EXPERIMENT_DIR, "deny_list.txt")
-TRANSFORMATION_LOG_FILE = os.path.join(EXPERIMENT_DIR, "transformation_log_v2.csv")
+OUTPUT_FILE = os.path.join(EXPERIMENT_DIR, "synthetic_algospeak.csv")
+DENY_LIST_FILE = os.path.join(EXPERIMENT_DIR, "deny_list_class1.txt")
+TRANSFORMATION_LOG_FILE = os.path.join(EXPERIMENT_DIR, "transformation_log.csv")
 HINTS_FILE = os.path.join(BASE_DIR, "deny_term_hints.json")
 
 os.makedirs(EXPERIMENT_DIR, exist_ok=True)
@@ -457,13 +458,21 @@ def append_to_output_csv(new_data: dict, output_file: str):
 # ────────────────────────────────────────────────
 # MAIN PIPELINE
 # ────────────────────────────────────────────────
-def process_csv(limit_rows=None, model=DEFAULT_MODEL, overwrite=False, input_file=None):
-    active_input = input_file if input_file else INPUT_FILE
+def process_csv(limit_rows=None, model=DEFAULT_MODEL, overwrite=False, input_file=None, output_file=None):
+    active_input  = input_file  if input_file  else INPUT_FILE
+    active_output = output_file if output_file else OUTPUT_FILE
+
+    # Derive log filename from output filename
+    out_path = Path(active_output)
+    active_log = str(out_path.parent / out_path.name.replace("synthetic_algospeak", "transformation_log"))
+    if active_log == active_output:  # fallback if name doesn't match pattern
+        active_log = str(out_path.parent / (out_path.stem + "_log.csv"))
+
     print(f"\n{'='*60}")
     print(f"Model:   {model}")
     print(f"Input:   {active_input}")
-    print(f"Output:  {OUTPUT_FILE}")
-    print(f"Log:     {TRANSFORMATION_LOG_FILE}")
+    print(f"Output:  {active_output}")
+    print(f"Log:     {active_log}")
     print(f"{'='*60}\n")
 
     if not os.path.exists(active_input):
@@ -478,17 +487,17 @@ def process_csv(limit_rows=None, model=DEFAULT_MODEL, overwrite=False, input_fil
     print(f"-> Using column '{text_column}' as source text\n")
 
     if overwrite:
-        for f in [OUTPUT_FILE, TRANSFORMATION_LOG_FILE]:
+        for f in [active_output, active_log]:
             if os.path.exists(f):
                 os.remove(f)
                 print(f"Overwrite: deleted {f}")
 
-    log_df = load_transformation_log(TRANSFORMATION_LOG_FILE)
+    log_df = load_transformation_log(active_log)
 
     processed_originals = set()
-    if os.path.exists(OUTPUT_FILE):
+    if os.path.exists(active_output):
         try:
-            df_existing = pd.read_csv(OUTPUT_FILE, encoding='utf-8-sig')
+            df_existing = pd.read_csv(active_output, encoding='utf-8-sig')
             if 'original_text' in df_existing.columns:
                 processed_originals = set(
                     df_existing['original_text'].astype(str).str.strip()
@@ -588,7 +597,7 @@ def process_csv(limit_rows=None, model=DEFAULT_MODEL, overwrite=False, input_fil
                     'deny_terms_detected': "|".join(deny_terms_detected),
                     'deny_terms_transformed': "|".join(term_techniques.keys()),
                 },
-                OUTPUT_FILE,
+                active_output,
             )
 
             # Log individual term → substitution pairs per technique
@@ -603,7 +612,7 @@ def process_csv(limit_rows=None, model=DEFAULT_MODEL, overwrite=False, input_fil
                 and sub not in get_seen_outputs(log_df, term, term_techniques[term])
             ]
             if new_log_entries:
-                append_to_transformation_log(TRANSFORMATION_LOG_FILE, new_log_entries)
+                append_to_transformation_log(active_log, new_log_entries)
                 log_df = pd.concat(
                     [log_df, pd.DataFrame(new_log_entries)],
                     ignore_index=True,
@@ -621,8 +630,8 @@ def process_csv(limit_rows=None, model=DEFAULT_MODEL, overwrite=False, input_fil
     print(f"  Skipped (no deny):    {skipped_no_deny}")
     print(f"  Skipped (existing):   {skipped_existing}")
     print(f"  Errors:               {errors}")
-    print(f"  Output CSV:           {OUTPUT_FILE}")
-    print(f"  Transformation log:   {TRANSFORMATION_LOG_FILE}")
+    print(f"  Output CSV:           {active_output}")
+    print(f"  Transformation log:   {active_log}")
     print(f"{'='*60}\n")
 
 
@@ -646,6 +655,10 @@ if __name__ == "__main__":
         '--input', type=str, default=None,
         help="Path to input CSV (default: data/splits/algospeak_sources.csv).",
     )
+    parser.add_argument(
+        '--output', type=str, default=None,
+        help="Path to output CSV (default: Algospeak_experiment/synthetic_algospeak.csv).",
+    )
     args = parser.parse_args()
     process_csv(limit_rows=args.test, model=args.model, overwrite=args.overwrite,
-                input_file=args.input)
+                input_file=args.input, output_file=args.output)

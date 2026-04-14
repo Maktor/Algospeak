@@ -106,16 +106,69 @@ def build_prototypes(
     embeddings: np.ndarray,
     labels:     np.ndarray,
     num_classes: int,
+    weights:    np.ndarray | None = None,
 ) -> np.ndarray:
-    """Average embedding per class -> [num_classes, D] prototype matrix."""
+    """Average embedding per class -> [num_classes, D] prototype matrix.
+
+    weights: optional per-sample weight array (same length as labels).
+             If provided, class 3 prototype uses weighted mean; other classes
+             use uniform mean regardless.
+    """
     D = embeddings.shape[1]
     prototypes = np.zeros((num_classes, D), dtype=np.float32)
     for cls in range(num_classes):
         mask = labels == cls
         if mask.sum() > 0:
-            proto = embeddings[mask].mean(axis=0)
+            embs = embeddings[mask]
+            if weights is not None and cls == 3:
+                w = weights[mask]
+                w = w / w.sum()
+                proto = (embs * w[:, None]).sum(axis=0)
+            else:
+                proto = embs.mean(axis=0)
             prototypes[cls] = proto / (np.linalg.norm(proto) + 1e-8)
     return prototypes
+
+
+def load_class3_weights(train_csv_path: Path, synth_csv_path: Path,
+                        labels: np.ndarray) -> np.ndarray:
+    """Compute inverse-frequency weights for class 3 training examples.
+
+    Joins train.csv with synthetic_algospeak.csv on text=algospeak_text to
+    recover the deny_terms_transformed for each class 3 row, then assigns
+    weight = 1 / term_count so underrepresented algospeak types contribute more
+    to the prototype.
+    """
+    train_df = pd.read_csv(train_csv_path).dropna(subset=["text"]).reset_index(drop=True)
+    synth_df = pd.read_csv(synth_csv_path)
+    text_to_term = dict(zip(
+        synth_df["algospeak_text"].astype(str).str.strip(),
+        synth_df["deny_terms_transformed"].astype(str),
+    ))
+
+    # Build term list for every training row (non-class-3 rows get "")
+    terms = []
+    for i, row in train_df.iterrows():
+        if labels[i] == 3:
+            terms.append(text_to_term.get(str(row["text"]).strip(), "unknown"))
+        else:
+            terms.append("")
+
+    # Count occurrences among class 3 only
+    class3_terms = [t for t, lbl in zip(terms, labels) if lbl == 3]
+    term_counts = pd.Series(class3_terms).value_counts().to_dict()
+
+    weights = np.ones(len(labels), dtype=np.float32)
+    for i, (term, lbl) in enumerate(zip(terms, labels)):
+        if lbl == 3:
+            weights[i] = 1.0 / term_counts.get(term, 1)
+
+    matched = sum(1 for t, lbl in zip(terms, labels) if lbl == 3 and t != "unknown")
+    total_c3 = int((labels == 3).sum())
+    print(f"  Class 3 weight lookup: {matched}/{total_c3} matched to deny terms "
+          f"({100*matched/total_c3:.1f}%)")
+    print(f"  Unique deny terms in class 3 training: {len(term_counts)}")
+    return weights
 
 
 def predict(
@@ -289,7 +342,9 @@ def main():
     print("\nBuilding class prototypes from training set...")
     train_ds = load_dataset(BASE_DIR / cfg["prepared_dir"] / "train.pt")
     train_embs, train_labels = get_embeddings(encoder, train_ds, cfg["batch_size"], device)
-    prototypes = build_prototypes(train_embs, train_labels, cfg["num_classes"])
+    synth_csv = BASE_DIR / "Algospeak_experiment" / "synthetic_algospeak.csv"
+    weights = load_class3_weights(BASE_DIR / cfg["train_csv"], synth_csv, train_labels)
+    prototypes = build_prototypes(train_embs, train_labels, cfg["num_classes"], weights=weights)
     np.save(results_dir / "prototypes.npy", prototypes)
     print(f"  Prototypes saved -> {results_dir / 'prototypes.npy'}")
 

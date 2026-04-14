@@ -192,7 +192,7 @@ def main():
 
     train_loader = DataLoader(
         train_ds, batch_size=cfg["batch_size"], shuffle=True,
-        num_workers=2, pin_memory=device.type == "cuda",
+        num_workers=0, pin_memory=device.type == "cuda",
     )
 
     # ── Model ─────────────────────────────────────────────────────────
@@ -259,7 +259,7 @@ def main():
 
         # Val loss (for logging only)
         val_loader_tmp = DataLoader(
-            val_ds, batch_size=cfg["batch_size"], shuffle=False, num_workers=2,
+            val_ds, batch_size=cfg["batch_size"], shuffle=False, num_workers=0,
             pin_memory=device.type == "cuda",
         )
         val_loss = run_epoch(

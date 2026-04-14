@@ -62,7 +62,7 @@ logger = logging.getLogger(__name__)
 # ─────────────────────────────────────────────────────────────────────
 BASE_DIR              = Path(__file__).parent
 CLASSIFIED_CSV        = BASE_DIR / "final_classified_data" / "classified_data.csv"
-SYNTHETIC_CSV         = BASE_DIR / "Algospeak_experiment" / "synthetic_algospeak_v2.csv"
+SYNTHETIC_CSV         = BASE_DIR / "Algospeak_experiment" / "synthetic_algospeak.csv"
 OUTPUT_DIR            = BASE_DIR / "data" / "splits"
 POOL_CSV              = OUTPUT_DIR / "class012_pool.csv"
 ALGO_SOURCES_CSV      = OUTPUT_DIR / "algospeak_sources.csv"
@@ -118,9 +118,10 @@ def load_synthetic(min_words: int) -> pd.DataFrame | None:
     before = len(df)
     df = df[df["text"].apply(word_count) >= min_words].copy()
     df["classification"] = 3
+    df["original_text"] = df["original_text"].astype(str) if "original_text" in df.columns else ""
 
     logger.info(f"  Loaded {before} synthetic posts → {len(df)} after min {min_words}-word filter")
-    return df[["text", "classification"]]
+    return df[["text", "classification", "original_text"]]
 
 
 def balanced_sample(df_by_class: dict, n: int, seed: int) -> pd.DataFrame:
@@ -150,6 +151,64 @@ def stratified_split(df: pd.DataFrame, val_frac: float, test_frac: float,
         train_val, test_size=val_frac_adjusted, stratify=train_val["classification"],
         random_state=seed
     )
+    return train, val, test
+
+
+def group_aware_split(df: pd.DataFrame, val_frac: float, test_frac: float,
+                      seed: int) -> tuple:
+    """
+    Split df into train/val/test ensuring that a class 1/2 original post and its
+    class 3 synthetic counterpart always land in the same split.
+
+    Uses original_text column (present on class 3 rows) to build pair groups.
+    All other rows are treated as singletons (their own group).
+    Groups are shuffled and assigned to splits proportionally.
+    """
+    import numpy as np
+    rng = np.random.default_rng(seed)
+    df = df.copy().reset_index(drop=True)
+
+    # Build group_id map: original_text → group_id (one per pair)
+    group_id_map = {}
+    next_id = 0
+    if "original_text" in df.columns:
+        for orig in df.loc[df["classification"] == 3, "original_text"].dropna().unique():
+            orig = str(orig).strip()
+            if orig:
+                group_id_map[orig] = next_id
+                next_id += 1
+
+    # Assign group IDs to every row
+    def assign_group(row):
+        if row["classification"] == 3:
+            orig = str(row.get("original_text", "")).strip()
+            return group_id_map.get(orig)
+        # Class 1/2 originals: match by text
+        return group_id_map.get(str(row["text"]).strip())
+
+    df["_group"] = df.apply(assign_group, axis=1)
+
+    # Unpaired rows each get their own unique group ID
+    unpaired = df["_group"].isna()
+    df.loc[unpaired, "_group"] = range(next_id, next_id + int(unpaired.sum()))
+    df["_group"] = df["_group"].astype(int)
+
+    # Shuffle groups and assign to splits
+    groups = df["_group"].unique()
+    rng.shuffle(groups)
+
+    n_test = int(len(groups) * test_frac)
+    n_val  = int(len(groups) * val_frac)
+
+    test_groups  = set(groups[:n_test])
+    val_groups   = set(groups[n_test:n_test + n_val])
+
+    test  = df[df["_group"].isin(test_groups)].drop(columns=["_group"])
+    val   = df[df["_group"].isin(val_groups)].drop(columns=["_group"])
+    train = df[~df["_group"].isin(test_groups | val_groups)].drop(columns=["_group"])
+
+    logger.info(f"  Group-aware split: {len(groups)} groups "
+                f"→ train={len(train)}, val={len(val)}, test={len(test)}")
     return train, val, test
 
 
@@ -184,7 +243,7 @@ def stage1(args):
 
     df = load_classified(args.min_words)
 
-    # Change C: exclude posts already processed by synthetic_data_v2.py from candidate pool
+    # Change C: exclude posts already processed by synthetic_data.py from candidate pool
     # so they are never re-selected as new sources (avoids re-generating duplicates).
     if SYNTHETIC_CSV.exists():
         try:
@@ -222,22 +281,14 @@ def stage1(args):
     all_sources[["text", "classification"]].to_csv(ALGO_SOURCES_CSV, index=False)
     logger.info(f"  Written to: {ALGO_SOURCES_CSV}")
 
-    # Write class 0/1/2 pool with source posts removed (leakage prevention).
-    # Change B: also exclude all historical synthetic-source originals so that posts
-    # generated in a previous run never re-enter class 1/2 training data.
-    source_texts = set(all_sources["text"].tolist())
-    if SYNTHETIC_CSV.exists():
-        try:
-            existing_synth = pd.read_csv(SYNTHETIC_CSV, usecols=["original_text"],
-                                         encoding="utf-8-sig")
-            historical = set(existing_synth["original_text"].dropna().astype(str))
-            source_texts = source_texts | historical
-            logger.info(f"  Also excluding {len(historical)} historical synthetic-source posts from pool")
-        except Exception as e:
-            logger.warning(f"  Could not load historical synthetic originals for pool exclusion: {e}")
-    pool = df[~df["text"].isin(source_texts)][["text", "classification"]]
+    # Write class 0/1/2 pool — include ALL posts (including algospeak source posts).
+    # Per research (SimCSE EMNLP 2021, hate speech augmentation literature), originals
+    # should remain in training. Split-time grouping ensures originals and their class 3
+    # counterparts always land in the same split (train/val/test), preventing leakage.
+    pool = df[["text", "classification"]]
     pool.to_csv(POOL_CSV, index=False)
     logger.info(f"  Written class 0/1/2 pool ({len(pool):,} posts) to: {POOL_CSV}")
+    logger.info(f"  (Source posts included — grouping at split time prevents train/test leakage)")
 
     logger.info("\n  Available posts per class after source exclusion:")
     for cls in [0, 1, 2]:
@@ -280,40 +331,6 @@ def stage2(args):
     pool["text"] = pool["text"].astype(str)
     logger.info(f"Loaded class 0/1/2 pool: {len(pool):,} posts")
 
-    # ── Reclaim skipped algospeak sources back into the pool ─────────
-    # synthetic_data.py skips posts with no deny-list terms. Those posts were
-    # excluded from the pool in stage 1 but never got algospeak versions —
-    # they'd just be wasted. Find them and return them to their original class.
-    if ALGO_SOURCES_CSV.exists():
-        sources = pd.read_csv(ALGO_SOURCES_CSV)
-        sources["text"] = sources["text"].astype(str)
-
-        class3_raw = load_synthetic(args.min_words)
-        transformed_texts = set(class3_raw["text"].tolist()) if class3_raw is not None else set()
-
-        # A source post is "skipped" if its original text doesn't appear in the
-        # synthetic output. (synthetic_data.py writes original_text for each row.)
-        if SYNTHETIC_CSV.exists():
-            synth_df = pd.read_csv(SYNTHETIC_CSV)
-            if "original_text" in synth_df.columns:
-                processed_originals = set(synth_df["original_text"].dropna().astype(str))
-            else:
-                processed_originals = set()
-        else:
-            processed_originals = set()
-
-        skipped_sources = sources[~sources["text"].isin(processed_originals)].copy()
-        if len(skipped_sources) > 0:
-            logger.info(f"\nReclaiming {len(skipped_sources)} skipped algospeak source posts "
-                        f"back into class 1/2 pool")
-            logger.info(f"  (These were designated for algospeak generation but had no deny-list "
-                        f"terms, so synthetic_data.py skipped them.)")
-            pool = pd.concat([pool, skipped_sources[["text", "classification"]]],
-                             ignore_index=True)
-            logger.info(f"  Pool size after reclaim: {len(pool):,}")
-        else:
-            logger.info("No skipped sources to reclaim — all designated posts were processed.")
-
     # ── Load class 3 synthetic data ──────────────────────────────────
     class3 = load_synthetic(args.min_words)
     if class3 is None or len(class3) == 0:
@@ -351,7 +368,9 @@ def stage2(args):
     logger.info(f"\nBalanced dataset: {len(balanced)} total posts ({n} per class)")
 
     # ── Split into train / val / test ────────────────────────────────
-    train, val, test = stratified_split(balanced, args.val_frac, args.test_frac, args.seed)
+    # Group-aware split: class 1/2 originals and their class 3 counterparts
+    # are always assigned to the same split (train/val/test).
+    train, val, test = group_aware_split(balanced, args.val_frac, args.test_frac, args.seed)
     print_split_stats(train, val, test)
 
     # Verify balance
@@ -366,10 +385,11 @@ def stage2(args):
     val_path     = OUTPUT_DIR / "val.csv"
     test_path    = OUTPUT_DIR / "test.csv"
 
-    balanced.to_csv(full_path, index=False)
-    train.to_csv(train_path, index=False)
-    val.to_csv(val_path, index=False)
-    test.to_csv(test_path, index=False)
+    out_cols = ["text", "classification"]
+    balanced.reindex(columns=out_cols).to_csv(full_path, index=False)
+    train.reindex(columns=out_cols).to_csv(train_path, index=False)
+    val.reindex(columns=out_cols).to_csv(val_path, index=False)
+    test.reindex(columns=out_cols).to_csv(test_path, index=False)
 
     logger.info(f"\nWritten:")
     logger.info(f"  {full_path}  ({len(balanced)} rows)")
@@ -399,12 +419,19 @@ def main():
                         help="Random seed (default: 42)")
     parser.add_argument("--source", type=Path, default=None,
                         help="Override input classified CSV (default: final_classified_data/classified_data.csv)")
+    parser.add_argument("--synthetic", type=Path, default=None,
+                        help="Override synthetic algospeak CSV (default: Algospeak_experiment/synthetic_algospeak.csv)")
     args = parser.parse_args()
 
     if args.source:
         global CLASSIFIED_CSV
         CLASSIFIED_CSV = args.source
         logger.info(f"Using custom source CSV: {CLASSIFIED_CSV}")
+
+    if args.synthetic:
+        global SYNTHETIC_CSV
+        SYNTHETIC_CSV = args.synthetic
+        logger.info(f"Using custom synthetic CSV: {SYNTHETIC_CSV}")
 
     logger.info(f"Config: target={args.target} per class, min_words={args.min_words}, "
                 f"val={args.val_frac}, test={args.test_frac}, seed={args.seed}")

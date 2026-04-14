@@ -29,6 +29,11 @@ poc/checkpoints/
 poc/data/
 poc/results/
 
+# LLM audit outputs
+llm_audit/llm_audit.csv
+
+# Generated text extracts (keep PDFs, not extracted text)
+seed_paper/extracted.txt
+
 # Commit these specific CSVs despite *.csv rule
-!data/splits/reclassified_final.csv
-!Algospeak_experiment/synthetic_algospeak_v2.csv
+!Algospeak_experiment/synthetic_algospeak.csv

@@ -1,7 +1,7 @@
 """
 build_deny_hints.py
 
-Reads algospeak_dictionary.json and deny_list.txt.
+Reads algospeak_dictionary.json and deny_list_class1.txt + deny_list_class2.txt.
 For each deny-list term, extracts known substitutions per technique from the dictionary.
 Writes deny_term_hints.json: {deny_term: {pictorial: [...], abbreviation: [...], paraphrase: [...], unknown_spelling: [...]}}
 
@@ -15,7 +15,10 @@ import unicodedata
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DICT_FILE = os.path.join(BASE_DIR, "algospeak_dictionary.json")
-DENY_LIST_FILE = os.path.join(BASE_DIR, "Algospeak_experiment", "deny_list.txt")
+DENY_LIST_FILES = [
+    os.path.join(BASE_DIR, "Algospeak_experiment", "deny_list_class1.txt"),
+    os.path.join(BASE_DIR, "Algospeak_experiment", "deny_list_class2.txt"),
+]
 OUTPUT_FILE = os.path.join(BASE_DIR, "deny_term_hints.json")
 
 
@@ -152,9 +155,12 @@ def build_hints(dictionary: dict, deny_set: set[str]) -> dict:
 # ─────────────────────────────────────────────────────────
 
 def main():
-    print(f"Loading deny list from: {DENY_LIST_FILE}")
-    deny_set = load_deny_list(DENY_LIST_FILE)
-    print(f"  {len(deny_set)} deny-list terms loaded.")
+    deny_set = set()
+    for f in DENY_LIST_FILES:
+        loaded = load_deny_list(f)
+        print(f"Loading deny list from: {f} ({len(loaded)} terms)")
+        deny_set |= loaded
+    print(f"  {len(deny_set)} deny-list terms loaded total.")
 
     print(f"Loading dictionary from: {DICT_FILE}")
     dictionary = load_dictionary(DICT_FILE)
