@@ -28,6 +28,8 @@ dataset_cleaning/outputs/
 poc/checkpoints/
 poc/data/
 poc/results/
+experiments/*/checkpoints/
+experiments/*/data/prepared/
 
 # LLM audit outputs
 llm_audit/llm_audit.csv

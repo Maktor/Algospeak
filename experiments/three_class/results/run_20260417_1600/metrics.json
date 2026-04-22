@@ -1,0 +1,60 @@
+[
+  {
+    "split": "val",
+    "accuracy": 0.8643,
+    "macro_f1": 0.8721,
+    "weighted_f1": 0.8649,
+    "per_class": {
+      "Allowed": {
+        "precision": 0.8123,
+        "recall": 0.8942,
+        "f1": 0.8513
+      },
+      "Harmful Content": {
+        "precision": 0.879,
+        "recall": 0.8373,
+        "f1": 0.8576
+      },
+      "Algospeak": {
+        "precision": 0.9615,
+        "recall": 0.8592,
+        "f1": 0.9075
+      }
+    },
+    "auc_per_class": {
+      "Allowed": 0.9496,
+      "Harmful Content": 0.9543,
+      "Algospeak": 0.9783
+    },
+    "mean_auc": 0.9607
+  },
+  {
+    "split": "test",
+    "accuracy": 0.8706,
+    "macro_f1": 0.8779,
+    "weighted_f1": 0.8714,
+    "per_class": {
+      "Allowed": {
+        "precision": 0.8121,
+        "recall": 0.8986,
+        "f1": 0.8531
+      },
+      "Harmful Content": {
+        "precision": 0.8909,
+        "recall": 0.8502,
+        "f1": 0.8701
+      },
+      "Algospeak": {
+        "precision": 0.9699,
+        "recall": 0.8581,
+        "f1": 0.9106
+      }
+    },
+    "auc_per_class": {
+      "Allowed": 0.9511,
+      "Harmful Content": 0.9582,
+      "Algospeak": 0.9773
+    },
+    "mean_auc": 0.9622
+  }
+]

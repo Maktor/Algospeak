@@ -1,0 +1,489 @@
+{
+  "_notes": {
+    "techniques": [
+      "unknown_spelling  — leet-speak / symbol substitution (e.g. k*ll, @b0rt!0n)",
+      "known_harmless    — real existing word that looks or sounds similar (e.g. corn for porn)",
+      "abbreviation      — shortened form or the x-word / x-slur construction",
+      "pictorial         — emoji (always deterministic; script uses hints[0] only)",
+      "paraphrase        — ONLY: kill/murder/suicide → unalive, suicide/die → exit the chat",
+      "repurposing       — existing unrelated word used as community code (e.g. end for kill)",
+      "phonetic          — sounds similar when spoken aloud (e.g. sewer slide)"
+    ],
+    "sources": "Merged from deny_term_hints.json (original) + Algospeak_dictionary.csv. All paraphrase entries reclassified to correct techniques per updated taxonomy."
+  },
+
+  "anal": {
+    "unknown_spelling": ["@nal"]
+  },
+
+  "ass": {
+    "pictorial": ["🍑"],
+    "unknown_spelling": ["@ss", "a$$"]
+  },
+
+  "asshole": {
+    "unknown_spelling": ["a**hole", "a$$hole"]
+  },
+
+  "assault": {
+    "unknown_spelling": ["@ssault"]
+  },
+
+  "attacked": {
+    "unknown_spelling": ["@tt@cked", "att@cked"]
+  },
+
+  "beaten": {
+    "unknown_spelling": ["b3@ten"]
+  },
+
+  "beheaded": {
+    "unknown_spelling": ["behe@ded"]
+  },
+
+  "bitch": {
+    "pictorial": ["💅"],
+    "unknown_spelling": ["b*tch", "b!tch", "bîches"],
+    "abbreviation": ["B"],
+    "phonetic": ["biiih"]
+  },
+
+  "blowjob": {
+    "pictorial": ["🌬 job"]
+  },
+
+  "bomb": {
+    "unknown_spelling": ["b0mb"]
+  },
+
+  "boob": {
+    "unknown_spelling": ["b00b"]
+  },
+
+  "boobs": {
+    "pictorial": ["🍈🍈"],
+    "unknown_spelling": ["b00bs"]
+  },
+
+  "breasts": {
+    "pictorial": ["🍒", "🍈"],
+    "repurposing": ["honk honks"]
+  },
+
+  "bullshit": {
+    "unknown_spelling": ["b@l$**t"]
+  },
+
+  "cadaver": {
+    "unknown_spelling": ["cadav3r"]
+  },
+
+  "cocaine": {
+    "pictorial": ["❄️"],
+    "repurposing": ["snow"]
+  },
+
+  "cock": {
+    "pictorial": ["🍆", "🍌"]
+  },
+
+  "corpses": {
+    "unknown_spelling": ["c0rpses"]
+  },
+
+  "cunt": {
+    "unknown_spelling": ["cvnt"]
+  },
+
+  "dick": {
+    "pictorial": ["🍆", "🍌"],
+    "phonetic": ["deck"]
+  },
+
+  "die": {
+    "paraphrase": ["exit the chat"]
+  },
+
+  "disappear": {
+    "unknown_spelling": ["d1sapp3ar"]
+  },
+
+  "dominant": {
+    "unknown_spelling": ["d0m"]
+  },
+
+  "drugs": {
+    "pictorial": ["💊"]
+  },
+
+  "erotic": {
+    "unknown_spelling": ["3r0tic"]
+  },
+
+  "faggot": {
+    "unknown_spelling": ["f@gg0t"],
+    "abbreviation": ["the f-slur", "f-slur"]
+  },
+
+  "fuck": {
+    "pictorial": ["🍴", "🦆"],
+    "unknown_spelling": ["f***"],
+    "abbreviation": ["F", "f word", "f-", "fck"],
+    "phonetic": ["fleeb", "fork", "frick", "fudge", "shaboink"]
+  },
+
+  "fucking": {
+    "pictorial": ["🦆ing"],
+    "unknown_spelling": ["f**king", "f*%#ing", "fu¢king", "fkn"],
+    "abbreviation": ["f'n"],
+    "phonetic": ["fuggin", "fuhn"],
+    "repurposing": ["fascinating", "flipping", "fracking"]
+  },
+
+  "goddamn": {
+    "unknown_spelling": ["g0ddamn"]
+  },
+
+  "hand-job": {
+    "pictorial": ["✊ job"]
+  },
+
+  "hell": {
+    "unknown_spelling": ["h3ll", "hel1"]
+  },
+
+  "homicide": {
+    "unknown_spelling": ["h0m!cid3"]
+  },
+
+  "hooker": {
+    "unknown_spelling": ["h**ker"]
+  },
+
+  "incest": {
+    "unknown_spelling": ["inc3st"]
+  },
+
+  "kill": {
+    "pictorial": ["🔪", "🪦"],
+    "unknown_spelling": ["k*11", "k*ll", "k*ller"],
+    "known_harmless": ["kell"],
+    "paraphrase": ["unalive"],
+    "repurposing": ["end", "k.o.", "dealive", "push the off switch", "to take a forever nap"]
+  },
+
+  "killed": {
+    "unknown_spelling": ["k!lled"],
+    "repurposing": ["ended", "k.o.ed", "flat lined"]
+  },
+
+  "killing": {
+    "unknown_spelling": ["k___ing"],
+    "repurposing": ["ending", "flatlining"]
+  },
+
+  "kink": {
+    "unknown_spelling": ["k!nk"]
+  },
+
+  "link": {
+    "pictorial": ["🔗"]
+  },
+
+  "marijuana": {
+    "pictorial": ["🍯"],
+    "repurposing": ["honey"]
+  },
+
+  "massacre": {
+    "unknown_spelling": ["m@ssacre"]
+  },
+
+  "masturbation": {
+    "unknown_spelling": ["m@$turbAt!on"]
+  },
+
+  "minor": {
+    "unknown_spelling": ["m!n0r"]
+  },
+
+  "motherfucker": {
+    "unknown_spelling": ["motherf****", "fothermucking", "mthrfckn"]
+  },
+
+  "murder": {
+    "unknown_spelling": ["m*rder", "m3rd3r", "murd3r"],
+    "paraphrase": ["unalive"]
+  },
+
+  "murdered": {
+    "phonetic": ["shmurdered"],
+    "repurposing": ["redrumed"],
+    "paraphrase": ["un alived"]
+  },
+
+  "mushroom": {
+    "pictorial": ["🍄"]
+  },
+
+  "nigger": {
+    "unknown_spelling": ["n!gg3r", "n!gg3rz"],
+    "abbreviation": ["n word"],
+    "phonetic": ["knee grow", "knee gar", "knee guh", "knee gars"]
+  },
+
+  "nude": {
+    "unknown_spelling": ["n*de", "n00ds"]
+  },
+
+  "orgasm": {
+    "unknown_spelling": ["org*sm"],
+    "abbreviation": ["o"]
+  },
+
+  "pedophilia": {
+    "repurposing": ["cheese pizza"]
+  },
+
+  "penis": {
+    "pictorial": ["🍆", "🍌"]
+  },
+
+  "porn": {
+    "pictorial": ["🌽", "🌶️ movie"],
+    "known_harmless": ["corn"],
+    "repurposing": ["fun movie", "spicy movie"]
+  },
+
+  "pornhub": {
+    "pictorial": ["🖤🧡"]
+  },
+
+  "pornography": {
+    "pictorial": ["🌽", "🌶️ movie"],
+    "known_harmless": ["cornography", "conrography"],
+    "repurposing": ["fun movie", "spicy movie"]
+  },
+
+  "pornstar": {
+    "pictorial": ["🌽⭐"]
+  },
+
+  "psychedelics": {
+    "unknown_spelling": ["psyched3lics"]
+  },
+
+  "pussy": {
+    "pictorial": ["🐱"],
+    "unknown_spelling": ["pu$$y"]
+  },
+
+  "rape": {
+    "pictorial": ["🍇"],
+    "unknown_spelling": ["gr4pe", "r@pe", "r***", "r4pe"],
+    "known_harmless": ["grape", "rope"],
+    "abbreviation": ["SA", "the r-word", "r word"]
+  },
+
+  "raped": {
+    "unknown_spelling": ["r@p3d", "r****"],
+    "abbreviation": ["SAd"]
+  },
+
+  "retard": {
+    "unknown_spelling": ["r3t4rd"],
+    "abbreviation": ["the r-word", "r-word"]
+  },
+
+  "retarded": {
+    "unknown_spelling": ["r3t4rd3d"],
+    "abbreviation": ["the r-word"]
+  },
+
+  "sex": {
+    "pictorial": ["s🍳x", "s🥚x", "🌶️time", "🌶️life"],
+    "unknown_spelling": ["s3gs", "s3x", "s()x", "secks"],
+    "phonetic": ["seggs", "seggsytime", "shmex"],
+    "repurposing": ["spicy time", "spicy life"]
+  },
+
+  "sexual": {
+    "pictorial": ["s🍳👞al"],
+    "unknown_spelling": ["s*xual"],
+    "phonetic": ["seggsual"]
+  },
+
+  "sexy": {
+    "phonetic": ["seggsy"],
+    "repurposing": ["spicy"]
+  },
+
+  "shit": {
+    "pictorial": ["💩"],
+    "unknown_spelling": ["sh*t", "shjt"],
+    "phonetic": ["shish", "syiet"]
+  },
+
+  "shoot": {
+    "unknown_spelling": ["sh00t", "sh00ter"]
+  },
+
+  "shooting": {
+    "unknown_spelling": ["sh00t!ing", "sh00ting", "sho0ting"]
+  },
+
+  "shot": {
+    "unknown_spelling": ["sh0t"]
+  },
+
+  "slut": {
+    "unknown_spelling": ["sl*t"]
+  },
+
+  "stab": {
+    "pictorial": ["🔪"],
+    "unknown_spelling": ["st@b", "st*b"]
+  },
+
+  "stabbed": {
+    "pictorial": ["🔪"],
+    "unknown_spelling": ["st@bb3d"]
+  },
+
+  "submissive": {
+    "unknown_spelling": ["súb"]
+  },
+
+  "suicide": {
+    "unknown_spelling": ["su!c!de", "su*c*de"],
+    "paraphrase": ["exit the chat", "unalive"],
+    "phonetic": ["sewer slide", "suey side"],
+    "repurposing": ["toaster bath"]
+  },
+
+  "suicidal": {
+    "unknown_spelling": ["su!c!dal"]
+  },
+
+  "threesome": {
+    "unknown_spelling": ["3sum"]
+  },
+
+  "tits": {
+    "unknown_spelling": ["t1ts"],
+    "repurposing": ["honk honks"]
+  },
+
+  "titties": {
+    "unknown_spelling": ["t1tt1es"]
+  },
+
+  "tranny": {
+    "unknown_spelling": ["tr@nny"]
+  },
+
+  "vibrator": {
+    "repurposing": ["spicy eggplant"]
+  },
+
+  "violence": {
+    "unknown_spelling": ["v10l3nc3"]
+  },
+
+  "whore": {
+    "unknown_spelling": ["wh0re"]
+  },
+
+  "_review_claude_additions": "The entries below were added by Claude based on frequency analysis of selected_candidates.csv. Review before finalizing — verify community forms are accurate.",
+
+  "beaner": {
+    "unknown_spelling": ["b3@n3r"]
+  },
+
+  "bdsm": {
+    "unknown_spelling": ["b.d.s.m."]
+  },
+
+  "boner": {
+    "unknown_spelling": ["b0n3r"]
+  },
+
+  "chink": {
+    "unknown_spelling": ["ch!nk", "ch*nk"],
+    "abbreviation": ["c-slur"]
+  },
+
+  "clit": {
+    "unknown_spelling": ["cl!t"]
+  },
+
+  "coon": {
+    "unknown_spelling": ["c00n", "c**n"],
+    "abbreviation": ["c-slur"]
+  },
+
+  "creampie": {
+    "unknown_spelling": ["cr3@mp!3"]
+  },
+
+  "cum": {
+    "unknown_spelling": ["c*m", "c**m"],
+    "pictorial": ["💦"]
+  },
+
+  "cumming": {
+    "unknown_spelling": ["c*mming", "c**mming"],
+    "pictorial": ["💦ing"]
+  },
+
+  "dyke": {
+    "unknown_spelling": ["d*ke", "dy@k"],
+    "abbreviation": ["d-slur", "d word"]
+  },
+
+  "fetish": {
+    "unknown_spelling": ["f3t!sh"]
+  },
+
+  "gangbang": {
+    "unknown_spelling": ["g@ngb@ng"]
+  },
+
+  "gook": {
+    "unknown_spelling": ["g00k"]
+  },
+
+  "horny": {
+    "unknown_spelling": ["h0rny", "h*rny"]
+  },
+
+  "kike": {
+    "unknown_spelling": ["k!ke", "k1ke"],
+    "abbreviation": ["k-slur", "k word"]
+  },
+
+  "naked": {
+    "unknown_spelling": ["n@k3d"],
+    "pictorial": ["🔞"]
+  },
+
+  "pegging": {
+    "unknown_spelling": ["p3gg!ng"]
+  },
+
+  "paki": {
+    "unknown_spelling": ["p@ki"]
+  },
+
+  "spic": {
+    "unknown_spelling": ["sp!c", "$pic"]
+  },
+
+  "twat": {
+    "unknown_spelling": ["tw@t"]
+  },
+
+  "wetback": {
+    "unknown_spelling": ["w3tb@ck"]
+  }
+}
