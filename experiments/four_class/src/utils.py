@@ -115,3 +115,17 @@ def get_untransformed(text: str, terms: list) -> list:
     """
     masked, _ = protect_markup(text)
     return [t for t in terms if _DENY_PATTERNS[t].search(masked)]
+
+def find_actual_form(text: str, term: str) -> str:
+    """
+    Return the actual surface form of `term` as it appears in `text`.
+    E.g. if term="stab" and text contains "stabbing", returns "stabbing".
+    Falls back to the canonical term if no match is found.
+    """
+    masked, _ = protect_markup(text)
+    pat = _DENY_PATTERNS.get(term)
+    if pat:
+        m = pat.search(masked)
+        if m:
+            return m.group(0)
+    return term

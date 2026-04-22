@@ -62,7 +62,7 @@ load_dotenv()
 
 # Shared detection utilities — same inflection-aware logic as analyze_candidates.py
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from utils import DENY_LIST_TERMS, detect_deny_terms, get_untransformed, protect_markup, restore_markup
+from utils import DENY_LIST_TERMS, detect_deny_terms, get_untransformed, find_actual_form, protect_markup, restore_markup
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
 SCRIPT_DIR  = Path(__file__).resolve().parent
@@ -75,7 +75,6 @@ DEFAULT_OUTPUT = DATA_DIR / "synthetic_algospeak.csv"
 DEFAULT_LOG    = DATA_DIR / "transformation_log.csv"
 
 ALGOSPEAK_LABEL  = 3   # class label assigned to all generated rows
-MAX_TERMS_PER_POST  = 6
 MAX_RETRIES         = 3
 MAX_UNIQUE_SUBS     = 6
 DEFAULT_MODEL       = "gpt-4-turbo"
@@ -118,19 +117,16 @@ TECHNIQUE_DESCRIPTIONS = {
         "recognizable to humans. Vary your approach.\n"
         "Examples: kill → k!ll, sex → $3x, suicide → su1c1d3, nigger → n1gg3r, "
         "faggot → f@gg0t, tranny → tr@nny, bitch → b1tch, retard → r3t4rd, "
-        "rape → r@pe, cocaine → c0k3, shit → $h!t, fuck → f*ck."
+        "rape → r@pe, cocaine → c0k3, shit → $h!t, fuck → f*ck, sex → secks"
     ),
     "known_harmless": (
         "Replace the sensitive word with a REAL, innocent-sounding word that looks or "
         "sounds similar. Never invent a word.\n"
-        "Examples: porn → corn, rape → grape, kill → keel, "
-        "cocaine → co-cane, murder → birder."
+        "Examples: porn → corn, rape → grape,, murder → birder."
     ),
     "abbreviation": (
         "Shorten the term to an abbreviation, acronym, or 'the ___ word/slur' construction.\n"
-        "Examples: sexual assault → SA, suicide → 'the s-word', nigger → 'the n-word', "
-        "faggot → 'the f-slur', tranny → 't-slur', retard → 'the r-word', "
-        "rape → 'the r-word', murder → 'the m-word'."
+        "Examples: sexual assault → SA"
     ),
     "pictorial": (
         "Replace the sensitive word with EXACTLY ONE emoji that visually or conceptually "
@@ -139,7 +135,7 @@ TECHNIQUE_DESCRIPTIONS = {
     ),
     "paraphrase": (
         "Substitute the sensitive word with a community-used coded paraphrase.\n"
-        "ONLY valid forms: kill/murder/suicide → unalive, suicide/die → exit the chat.\n"
+        "ONLY valid forms: kill/murder/suicide → unalive, suicide/die → exit the chat, suicide → toaster bath, .\n"
         "Do NOT use this technique for any other term."
     ),
     "repurposing": (
@@ -149,13 +145,14 @@ TECHNIQUE_DESCRIPTIONS = {
         "Examples: kill → end, killing → ending, porn → fun movie, "
         "sex → spicy time, cocaine → snow, marijuana → honey, "
         "vibrator → spicy eggplant, murdered → redrumed."
+        
     ),
     "phonetic": (
         "Replace the sensitive word with something that sounds phonetically similar "
         "when spoken aloud.\n"
-        "Examples: suicide → sewer slide, sex → secks, killed → kilt, "
-        "negro → knee grow, nigga → knee guh, murder → murda, rape → grapes, "
-        "tranny → granny, shit → shish."
+        "Examples: suicide → sewer slide, sex → seggs, killed → kilt, "
+        "negro → knee grow, nigger → knee gar, murder → merder, shit → shish, cocaine → co-cane, "
+        "faggot → faguette, "
     ),
 }
 
@@ -191,30 +188,33 @@ def sample_techniques(deny_terms: list) -> dict:
     """
     Independently sample a technique per deny term.
 
-    Slur terms: restricted to always-safe set (unknown_spelling, abbreviation, phonetic).
-      - pictorial unlocked if a hint emoji exists.
-      - paraphrase unlocked only if a confirmed community hint exists.
-      - known_harmless stays excluded for slurs (too likely to sanitize without guidance).
+    For every term: only techniques with a confirmed hint entry are eligible,
+    plus unknown_spelling which always works without hints (GPT can derive
+    leet-speak reliably). This prevents hallucinated repurposing codes,
+    invented abbreviations, and phonetic stretches for terms with no guidance.
 
-    Non-slur terms: full technique set, with pictorial gated on having a hint emoji.
+    Slur terms: further restricted — known_harmless excluded entirely.
+    Non-slur terms: all techniques eligible if a hint exists.
     """
     result = {}
     for term in deny_terms:
         is_slur = term.lower() in SLUR_TERMS
 
         if is_slur:
-            eligible = list(SLUR_SAFE_TECHNIQUES)
+            candidates = list(SLUR_SAFE_TECHNIQUES)  # unknown_spelling, abbreviation, phonetic
             if get_hints(term, 'pictorial'):
-                eligible.append('pictorial')
+                candidates.append('pictorial')
             if get_hints(term, 'paraphrase'):
-                eligible.append('paraphrase')
-            technique = random.choice(eligible)
+                candidates.append('paraphrase')
         else:
-            technique = random.choice(ALL_TECHNIQUES)
-            if technique == 'pictorial' and not get_hints(term, 'pictorial'):
-                technique = random.choice([t for t in ALL_TECHNIQUES if t != 'pictorial'])
+            candidates = list(ALL_TECHNIQUES)
 
-        result[term] = technique
+        # Keep only techniques that have hints, always keeping unknown_spelling as fallback
+        eligible = [t for t in candidates if t == 'unknown_spelling' or get_hints(term, t)]
+        if not eligible:
+            eligible = ['unknown_spelling']
+
+        result[term] = random.choice(eligible)
     return result
 
 def mixed_temperature(term_techniques: dict) -> float:
@@ -246,7 +246,8 @@ def append_log(path: Path, entries: list):
         df.to_csv(path, mode='w', header=True, index=False, encoding='utf-8-sig')
 
 # ── Prompt building ────────────────────────────────────────────────────────────
-def build_assignment_line(term: str, technique: str, log_df: pd.DataFrame) -> str:
+def build_assignment_line(term: str, technique: str, log_df: pd.DataFrame,
+                          actual_form: str | None = None) -> str:
     hints = get_hints(term, technique)
     seen  = get_seen(log_df, term, technique)
     constraint = ""
@@ -262,11 +263,19 @@ def build_assignment_line(term: str, technique: str, log_df: pd.DataFrame) -> st
     elif seen:
         constraint = f"avoid already-used: {', '.join(repr(s) for s in seen)}"
 
-    return f'  "{term}" → {technique.upper()}' + (f" | {constraint}" if constraint else "")
+    # Show the actual inflected form found in the text if it differs from the base term
+    label = f'"{term}"'
+    if actual_form and actual_form.lower() != term.lower():
+        label += f' (appears as "{actual_form}")'
 
-def build_system_prompt(term_techniques: dict, log_df: pd.DataFrame) -> str:
+    return f"  {label} → {technique.upper()}" + (f" | {constraint}" if constraint else "")
+
+def build_system_prompt(term_techniques: dict, log_df: pd.DataFrame,
+                        actual_forms: dict | None = None) -> str:
+    actual_forms = actual_forms or {}
     assignments = "\n".join(
-        build_assignment_line(t, tech, log_df) for t, tech in term_techniques.items()
+        build_assignment_line(t, tech, log_df, actual_forms.get(t))
+        for t, tech in term_techniques.items()
     )
     techniques_used = set(term_techniques.values())
     reference = "\n".join(
@@ -310,8 +319,9 @@ def build_user_prompt(text: str, term_techniques: dict) -> str:
     )
 
 # ── API call ───────────────────────────────────────────────────────────────────
-def call_api(text: str, term_techniques: dict, log_df: pd.DataFrame, model: str) -> tuple:
-    sys_prompt  = build_system_prompt(term_techniques, log_df)
+def call_api(text: str, term_techniques: dict, log_df: pd.DataFrame, model: str,
+             actual_forms: dict | None = None) -> tuple:
+    sys_prompt  = build_system_prompt(term_techniques, log_df, actual_forms)
     user_prompt = build_user_prompt(text, term_techniques)
     temperature = mixed_temperature(term_techniques)
     max_tokens  = min(800, max(150, len(text.split()) * 4))
@@ -465,8 +475,9 @@ def run(input_file: str, output_file: Path, log_file: Path,
             print(f"[{i+1}/{total}] SKIP (no deny terms): {original[:80]}")
             continue
 
-        terms_to_use   = deny_terms[:MAX_TERMS_PER_POST]
+        terms_to_use    = deny_terms
         term_techniques = sample_techniques(terms_to_use)
+        actual_forms    = {t: find_actual_form(original, t) for t in terms_to_use}
         temp            = mixed_temperature(term_techniques)
         tech_summary    = ", ".join(f"{t}={tech.upper()}" for t, tech in term_techniques.items())
 
@@ -483,14 +494,14 @@ def run(input_file: str, output_file: Path, log_file: Path,
         try:
             masked, markup = protect_markup(original)
 
-            algo_masked, subs = call_api(masked, term_techniques, log_df, model)
+            algo_masked, subs = call_api(masked, term_techniques, log_df, model, actual_forms)
 
             # Retry any terms GPT silently skipped
             missed = get_untransformed(restore_markup(algo_masked, markup), list(term_techniques.keys()))
             if missed:
                 print(f"  GPT missed {missed} — retrying...")
                 missed_tech = {t: term_techniques[t] for t in missed}
-                algo_masked, subs2 = call_api(algo_masked, missed_tech, log_df, model)
+                algo_masked, subs2 = call_api(algo_masked, missed_tech, log_df, model, actual_forms)
                 subs.update(subs2)
 
             algospeak_text = restore_markup(algo_masked, markup)

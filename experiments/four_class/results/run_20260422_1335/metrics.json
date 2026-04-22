@@ -1,0 +1,72 @@
+[
+  {
+    "split": "val",
+    "accuracy": 0.8642,
+    "macro_f1": 0.8651,
+    "weighted_f1": 0.8646,
+    "per_class": {
+      "Allowed": {
+        "precision": 0.8913,
+        "recall": 0.9425,
+        "f1": 0.9162
+      },
+      "Obscene Language": {
+        "precision": 0.8395,
+        "recall": 0.7816,
+        "f1": 0.8095
+      },
+      "Mature Content": {
+        "precision": 0.75,
+        "recall": 0.7931,
+        "f1": 0.7709
+      },
+      "Algospeak": {
+        "precision": 0.9877,
+        "recall": 0.9412,
+        "f1": 0.9639
+      }
+    },
+    "auc_per_class": {
+      "Allowed": 0.9842,
+      "Obscene Language": 0.9495,
+      "Mature Content": 0.9228,
+      "Algospeak": 0.987
+    },
+    "mean_auc": 0.9609
+  },
+  {
+    "split": "test",
+    "accuracy": 0.824,
+    "macro_f1": 0.8252,
+    "weighted_f1": 0.8233,
+    "per_class": {
+      "Allowed": {
+        "precision": 0.8041,
+        "recall": 0.8966,
+        "f1": 0.8478
+      },
+      "Obscene Language": {
+        "precision": 0.75,
+        "recall": 0.8276,
+        "f1": 0.7869
+      },
+      "Mature Content": {
+        "precision": 0.8219,
+        "recall": 0.6897,
+        "f1": 0.75
+      },
+      "Algospeak": {
+        "precision": 0.9467,
+        "recall": 0.8875,
+        "f1": 0.9161
+      }
+    },
+    "auc_per_class": {
+      "Allowed": 0.9474,
+      "Obscene Language": 0.9231,
+      "Mature Content": 0.9166,
+      "Algospeak": 0.9509
+    },
+    "mean_auc": 0.9345
+  }
+]

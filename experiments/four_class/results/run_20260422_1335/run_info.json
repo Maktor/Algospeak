@@ -1,0 +1,117 @@
+{
+  "run_id": "20260422_1335",
+  "date": "2026-04-22 13:35",
+  "notes": "run 4 - tau=0.20",
+  "checkpoint": {
+    "epoch": 9,
+    "val_loss": 0.04937
+  },
+  "config": {
+    "num_classes": 4,
+    "class_labels": {
+      "0": "Allowed",
+      "1": "Obscene Language",
+      "2": "Mature Content",
+      "3": "Algospeak"
+    },
+    "model_name": "vinai/bertweet-base",
+    "embedding_dim": 768,
+    "max_length": 128,
+    "batch_size": 32,
+    "learning_rate": 2e-05,
+    "weight_decay": 0.01,
+    "num_epochs": 20,
+    "warmup_steps": 100,
+    "early_stopping_patience": 5,
+    "fp16": true,
+    "gradient_clip": 1.0,
+    "temperature": 0.1,
+    "checkpoint_dir": "experiments/four_class/checkpoints",
+    "results_dir": "experiments/four_class/results"
+  },
+  "dataset": {
+    "train": {
+      "total": 2793,
+      "classes": {
+        "class_0": 696,
+        "class_1": 696,
+        "class_2": 696,
+        "class_3": 705
+      }
+    },
+    "val": {
+      "total": 346,
+      "classes": {
+        "class_0": 87,
+        "class_1": 87,
+        "class_2": 87,
+        "class_3": 85
+      }
+    },
+    "test": {
+      "total": 341,
+      "classes": {
+        "class_0": 87,
+        "class_1": 87,
+        "class_2": 87,
+        "class_3": 80
+      }
+    }
+  },
+  "results": {
+    "val": {
+      "accuracy": 0.8642,
+      "macro_f1": 0.8651,
+      "mean_auc": 0.9609,
+      "per_class": {
+        "Allowed": {
+          "precision": 0.8913,
+          "recall": 0.9425,
+          "f1": 0.9162
+        },
+        "Obscene Language": {
+          "precision": 0.8395,
+          "recall": 0.7816,
+          "f1": 0.8095
+        },
+        "Mature Content": {
+          "precision": 0.75,
+          "recall": 0.7931,
+          "f1": 0.7709
+        },
+        "Algospeak": {
+          "precision": 0.9877,
+          "recall": 0.9412,
+          "f1": 0.9639
+        }
+      }
+    },
+    "test": {
+      "accuracy": 0.824,
+      "macro_f1": 0.8252,
+      "mean_auc": 0.9345,
+      "per_class": {
+        "Allowed": {
+          "precision": 0.8041,
+          "recall": 0.8966,
+          "f1": 0.8478
+        },
+        "Obscene Language": {
+          "precision": 0.75,
+          "recall": 0.8276,
+          "f1": 0.7869
+        },
+        "Mature Content": {
+          "precision": 0.8219,
+          "recall": 0.6897,
+          "f1": 0.75
+        },
+        "Algospeak": {
+          "precision": 0.9467,
+          "recall": 0.8875,
+          "f1": 0.9161
+        }
+      }
+    }
+  }
+}
