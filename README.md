@@ -1,201 +1,155 @@
-# Algospeak Detection Project
+# Algospeak Detection — Dual BERTweet Classifier
 
-This project implements a comprehensive algospeak (intentional coded/obfuscated language) detection system for social media posts. It combines rule-based pattern matching with advanced LLM labeling to identify and categorize algospeak content.
+A four-class content moderation system for detecting algospeak (coded language used to evade automated filters) on social media. Built with a dual BERTweet architecture and contrastive learning.
 
-## Features
+**Live demo:** [timagonch/algospeak-classifier](https://huggingface.co/spaces/timagonch/algospeak-classifier) on Hugging Face Spaces
 
-- **Rule-based Detection**: Fast initial screening using dictionary matching and regex patterns
-- **LLM Labeling**: Advanced classification using OpenAI GPT models with structured outputs
-- **Data Pipeline**: Complete workflow from raw posts to labeled datasets
-- **Export Tools**: Convert results to CSV for analysis in spreadsheets
-- **Analysis Scripts**: Extract and examine detected algospeak patterns
+---
+
+## Classes
+
+| Label | Class | Description |
+|---|---|---|
+| 0 | Allowed | Benign content |
+| 1 | Obscene Language | Slurs, hate speech, offensive attacks |
+| 2 | Mature Content | Explicit content, drugs, self-harm, incitement |
+| 3 | Algospeak | Coded evasion of class 1 or 2 |
+
+---
+
+## Architecture
+
+**Dual BERTweet** (`vinai/bertweet-base`, 270M params × 2):
+
+- **Supervised encoder** — receives `"[CLASS_LABEL]: text"` during training (acts as teacher, discarded after)
+- **Unsupervised encoder** — receives raw text only; used exclusively at inference
+- **Loss** — Supervised InfoNCE (cross-encoder, like CLIP): pulls same-class embeddings together, pushes different-class apart
+- **Inference** — cosine similarity to class prototypes (average unsupervised embedding per class); algospeak prototype uses inverse deny-term frequency weighting
+
+---
 
 ## Project Structure
 
 ```
-algospeak_data/
-├── generated_data/          # Output files (auto-created, gitignored)
-├── algospeak_dictionary.json # Dictionary of algospeak terms
-├── posts.txt               # Input post data
-├── posts_10000.txt         # Larger input dataset
-├── pyproject.toml          # Project dependencies
-├── uv.lock                 # Lockfile for reproducible installs
-├── .python-version         # Python version specification
-├── .env                    # Environment variables (API keys)
-├── .gitignore             # Git ignore rules
-└── *.py                   # Python scripts
+├── poc/                          # Main pipeline scripts
+│   ├── src/
+│   │   ├── model.py              # DualEncoderModel + InfoNCE loss
+│   │   ├── encoder_prep.py       # Tokenize splits → .pt files
+│   │   ├── train.py              # Training loop (fp16, early stopping, resumable)
+│   │   └── inference.py          # Prototype inference + full eval metrics
+│   └── config.yaml               # Model config
+│
+├── experiments/
+│   └── four_class/               # Controlled four-class experiment (best model)
+│       ├── src/
+│       │   ├── model.py
+│       │   ├── encoder_prep.py
+│       │   ├── train.py
+│       │   ├── inference.py
+│       │   ├── prepare_splits.py # Combine + group-aware split
+│       │   ├── generate_algospeak.py  # GPT-4-turbo synthetic generation
+│       │   └── utils.py          # Deny-term detection, inflection-aware regex
+│       ├── data/
+│       │   ├── deny_list.txt     # Merged deny list (class1 + class2 terms)
+│       │   ├── algospeak_hints.json   # Known community substitution forms
+│       │   └── splits/           # train/val/test CSVs
+│       ├── results/              # Per-run metrics, confusion matrices, ROC curves
+│       ├── docs/
+│       │   └── temperature_ablation.md
+│       └── config.yaml
+│
+├── build_dataset.py              # Full dataset assembly pipeline (stages 1+2)
+├── reclassify.py                 # Deny-list override reclassification
+├── synthetic_data.py             # Original synthetic data generation
+├── ingest_new_data.py            # Deduplicate + identify algospeak candidates
+│
+├── Algospeak_experiment/
+│   ├── deny_list_class1.txt      # 115 slur/hate speech terms
+│   └── deny_list_class2.txt      # 521 explicit content terms
+│
+└── llm_audit/
+    ├── reclassify_full.py        # GPT-4o-mini bulk reclassification
+    └── analyze_reclassified.py
 ```
 
-## Setup Instructions
+---
 
-### 1. Clone and Install Dependencies
+## Setup
 
 ```bash
-# Clone the repository
-git clone <your-repo-url>
-cd algospeak_data
-
-# Install uv package manager (if not already installed)
-# On Windows: winget install astral-sh.uv
-# Or download from: https://github.com/astral-sh/uv
-
-# Install dependencies
+# Requires Python 3.12+ and uv
 uv sync
+
+# CUDA recommended (RTX 4070 or equivalent); CPU works but is slow
 ```
 
-### 2. Set Up Environment Variables
-
-Create a `.env` file in the project root:
-
+Create a `.env` file:
 ```env
-OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_API_KEY=your_key_here   # for synthetic generation
+HF_TOKEN=your_token_here       # for HF Spaces deployment
 ```
 
-Get your API key from [OpenAI Platform](https://platform.openai.com/api-keys).
+---
 
-### 3. Verify Installation
+## Running the Four-Class Experiment Pipeline
 
 ```bash
-# Activate virtual environment
-uv run python --version
+# 1. Prepare splits (combines reclassified + synthetic data, group-aware split)
+uv run python experiments/four_class/src/prepare_splits.py
 
-# Test basic import
-uv run python -c "import openai, pydantic; print('Dependencies OK')"
+# 2. Tokenize splits -> .pt files
+uv run python experiments/four_class/src/encoder_prep.py
+
+# 3. Train (--fresh to start clean; --temperature to override tau)
+uv run python experiments/four_class/src/train.py --fresh
+
+# 4. Inference + metrics (run before next --fresh or checkpoint is overwritten)
+uv run python experiments/four_class/src/inference.py --notes "describe run"
 ```
 
-## Usage
+Results saved to `experiments/four_class/results/run_YYYYMMDD_HHMM/`.
 
-All commands should be run from the project root directory.
+---
 
-### Data Collection
+## Key Results
 
-Collect posts from Bluesky:
+| Experiment | Test Acc | Macro F1 | Algospeak F1 |
+|---|---|---|---|
+| Full dataset, Run 4 (Apr 13, ~13k/class) | **89.4%** | — | — |
+| 3-class experiment (Apr 16) | 89.2% | 89.0% | **93.8%** |
+| Four-class controlled, tau=0.15 (Apr 22) | 80.7% | 80.8% | 90.5% |
 
-```bash
-uv run python test_pull.py
+**Temperature ablation** (four-class controlled experiment):
+
+| tau | Test Acc | Algospeak F1 |
+|---|---|---|
+| 0.07 | 72.1% | 81.4% |
+| 0.10 | 79.2% | 90.3% |
+| **0.15** | **80.7%** | **90.5%** |
+| 0.20 | 82.4% | 91.6% |
+
+tau=0.15 chosen over tau=0.20 despite lower aggregate metrics — tau=0.20 misclassified *"gonna unalive myself fr fr cant take this anymore"* as Allowed.
+
+---
+
+## Deployment
+
+Model weights are stored in `timagonch/algospeak-classifier-model` (HF model repo, ~1.1GB via LFS).
+Space code is in `timagonch/algospeak-classifier` (HF Spaces).
+
+To upload updated weights after retraining:
+```python
+from huggingface_hub import upload_file
+REPO = "timagonch/algospeak-classifier-model"
+upload_file("experiments/four_class/checkpoints/best_model.pt", "best_model.pt", repo_id=REPO, repo_type="model")
+upload_file("experiments/four_class/results/run_YYYYMMDD_HHMM/prototypes.npy", "prototypes.npy", repo_id=REPO, repo_type="model")
 ```
 
-This creates `posts_10000.txt` with English posts.
+---
 
-### Rule-Based Labeling
+## Environment
 
-Apply initial rule-based detection:
-
-```bash
-uv run python data_processing.py
-```
-
-Outputs:
-- `generated_data/clean_posts.txt`
-- `generated_data/questionable_posts.txt`
-- `generated_data/moderated_posts.txt`
-- `generated_data/labeled_posts.jsonl`
-
-### LLM Labeling
-
-Apply advanced LLM classification:
-
-```bash
-# Basic run
-uv run python llm_label_posts.py --input posts_10000.txt --model gpt-5-nano
-
-# Limited run for testing
-uv run python llm_label_posts.py --input posts.txt --model gpt-4o-mini --limit 100
-
-# Full production run
-uv run python llm_label_posts.py --input posts_10000.txt --model gpt-5-nano --limit 500 --overwrite
-```
-
-Outputs:
-- `generated_data/llm_labeled_posts.jsonl`
-- `generated_data/clean_posts.txt`
-- `generated_data/algospeak_yes.txt`
-- `generated_data/needs_manual_review.txt`
-- `generated_data/error_posts.txt`
-
-### Analysis and Export
-
-Extract algospeak posts for analysis:
-
-```bash
-uv run python extract_algospeak_posts.py
-```
-
-Convert to CSV for spreadsheet analysis:
-
-```bash
-uv run python jsonl_to_csv.py
-```
-
-Filter for algospeak detections:
-
-```bash
-uv run python inspect_algospeek.py
-```
-
-## Script Reference
-
-### Core Scripts
-
-- **`data_processing.py`**: Rule-based algospeak and moderation detection
-- **`llm_label_posts.py`**: LLM-powered detailed labeling with OpenAI API
-- **`test_pull.py`**: Collect posts from Bluesky firehose
-
-### Analysis Scripts
-
-- **`extract_algospeak_posts.py`**: Extract and display LLM-labeled algospeak posts
-- **`jsonl_to_csv.py`**: Convert JSONL results to CSV format
-- **`inspect_algospeek.py`**: Filter rule-based results for algospeak hits
-
-### Utility Scripts
-
-- **`main.py`**: Project entry point (placeholder)
-
-## Data Flow
-
-```
-Raw Posts → Rule-based Labeling → LLM Labeling → Analysis/Export
-     ↓             ↓                    ↓             ↓
-posts.txt → labeled_posts.jsonl → llm_labeled_posts.jsonl → CSV/Reports
-```
-
-## Configuration
-
-### Models
-
-- **gpt-5-nano**: Fast, cost-effective primary model
-- **gpt-4o-mini**: Fallback model for reliability
-
-### File Paths
-
-All output files are automatically created in `generated_data/` directory. Input files should be placed in the project root.
-
-### Environment
-
-- Python 3.12+
-- Dependencies managed by uv
-- Virtual environment auto-created by uv
-
-## Troubleshooting
-
-### Common Issues
-
-1. **OpenAI API Errors**: Check `.env` file and API key validity
-2. **Missing Dependencies**: Run `uv sync` to install packages
-3. **Path Errors**: Ensure running commands from project root
-4. **Rate Limits**: LLM script includes automatic retries and fallbacks
-
-### Generated Data
-
-The `generated_data/` folder contains all output files and is gitignored. Files are created automatically when scripts run.
-
-## Contributing
-
-1. Follow the existing code style
-2. Add docstrings to new functions
-3. Update this README for new features
-4. Test scripts before committing
-
-## License
-
-[Add your license information here]
+- Python 3.12, managed with `uv`
+- PyTorch with CUDA (RTX 4070 Laptop GPU, 8.6GB VRAM)
+- BERTweet: `vinai/bertweet-base`
+- Emoji tokenization: `emoji==0.6.0` (required — BERTweet was trained with emoji converted to text descriptions)
